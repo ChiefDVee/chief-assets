@@ -13,8 +13,9 @@
 
 cd ~/CHIEF_TOOLBOX/11_CHIEF_ASSETS || exit 1
 
-# Nieuwe bestanden detecteren
-NEW_FILES=$(git status --porcelain | grep -v "^D" | awk '{print $2}')
+# Stage eerst, dan detecteren wat er in de commit zit
+git add -A
+NEW_FILES=$(git diff --cached --name-only)
 
 if [[ -z "$NEW_FILES" ]]; then
   echo "✓ Niets te pushen — alles is up to date."
@@ -26,7 +27,6 @@ echo "$NEW_FILES"
 echo ""
 
 # Commit en push
-git add -A
 git commit -m "add: assets $(date +'%Y-%m-%d %H:%M')"
 git push
 
@@ -34,10 +34,11 @@ echo ""
 echo "✓ Gepushed. Raw URLs:"
 echo ""
 
-# Print raw URLs voor alle nieuwe bestanden
+# Print raw URLs met URL-encoded spaties
 echo "$NEW_FILES" | while read -r file; do
   [[ -z "$file" ]] && continue
-  echo "https://raw.githubusercontent.com/ChiefDVee/chief-assets/main/${file}"
+  encoded=$(echo "$file" | sed 's/ /%20/g')
+  echo "https://raw.githubusercontent.com/ChiefDVee/chief-assets/main/${encoded}"
 done
 
 echo ""
