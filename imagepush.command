@@ -28,7 +28,7 @@ echo ""
 
 # Commit en push
 git commit -m "add: assets $(date +'%Y-%m-%d %H:%M')"
-git push
+git push || { echo "❌ git push mislukt — commit staat lokaal, niets gepubliceerd"; exit 1; }
 
 echo ""
 echo "✓ Gepushed. Raw URLs:"
@@ -42,5 +42,11 @@ echo "$NEW_FILES" | while read -r file; do
 done
 
 echo ""
-echo "Done. Druk Enter om te sluiten."
-read
+# Enkel interactief op Enter wachten: niet-interactief (stdin geen terminal) gaf read op EOF rc 1 [2026-10-21]
+if [[ -t 0 ]]; then
+  echo "Done. Druk Enter om te sluiten."
+  read -r _ || true
+else
+  echo "Done."
+fi
+exit 0
