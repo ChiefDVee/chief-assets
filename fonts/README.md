@@ -12,4 +12,8 @@ https://cdn.jsdelivr.net/gh/ChiefDVee/chief-assets@main/fonts/bodoni-moda/bodoni
 
 Since 2026-11-11 chiefke.com/qotd no longer loads Bodoni Moda via jsDelivr: the hub self-hosts a copy of these files
 in `14_CHIEFHUB/assets/fonts/` (`bodoni-moda-latin-{400,700}-normal.woff2` + `OFL-bodonimoda.txt`, declared in
-`fonts.css` as "QOTD Bodoni"). This folder stays the source; after a font update, copy the files there again.
+`fonts.css` as "QOTD Bodoni").
+
+Since 2026-11-11 (later the same day) the source for every site is `../brand/fonts/` (byte-identical copies of these
+files); sites get them via the brand sync, never by hand. This folder only stays for old jsDelivr pins and will be
+cleaned up in a later phase.
