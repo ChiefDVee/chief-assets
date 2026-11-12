@@ -1,0 +1,12 @@
+<!-- chief-footer.html — gedeelde Chief-footer, bron van waarheid (chief-assets brand/footer/).
+     Alles vóór het footer-element (eerste regel die met de footer-tag begint) laat de sync-engine weg. Placeholders (@@…@@) vult de engine per site in;
+     een placeholder-regel zonder waarde (LINE, LINKS) verdwijnt volledig. CONTACT = leeg of " · <a href=mailto:…>…</a>".
+     Sites krijgen een gegenereerde kopie (statisch tussen CHIEF-FOOTER-markers, Flask als _chief_footer.html);
+     nooit met de hand bewerken in een site-repo. Geen donatie-/tipknop. -->
+<footer class="chief-footer">
+  <div class="cf-inner">
+    @@LINE@@
+    @@LINKS@@
+    <p class="cf-meta"><span class="cf-grp">© @@YEAR@@ @@NAME@@@@CONTACT@@</span><span class="cf-sep" aria-hidden="true"> · </span><span class="cf-grp">Made in Belgium · <a href="https://x.com/ChiefXBelgium" target="_blank" rel="noopener" aria-label="@ChiefXBelgium on X"><span aria-hidden="true">𝕏</span> @ChiefXBelgium</a></span></p>
+  </div>
+</footer>
