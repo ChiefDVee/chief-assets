@@ -1,0 +1,8 @@
+{
+  "name": "manillen",
+  "description": "Manillen: 32 kaarten (7 t/m A), de 10 (manille) is de hoogste",
+  "suits": ["spades", "hearts", "diamonds", "clubs"],
+  "ranks": ["7", "8", "9", "10", "J", "Q", "K", "A"],
+  "copies": 1,
+  "extra_cards": []
+}

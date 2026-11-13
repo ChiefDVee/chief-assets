@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ChiefCards demo</title>
+<link rel="stylesheet" href="../../brand/chief-tokens.css">
+<link rel="stylesheet" href="../chief-cards.css">
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--chief-bg);
+    color: var(--chief-text);
+    font-family: var(--chief-font-body);
+    line-height: 1.45;
+    overflow-x: hidden;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 var(--chief-space-4); }
+  header.top { padding: var(--chief-space-6) 0 var(--chief-space-4); }
+  .wordmark { margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -.5px; }
+  .name-accent { color: var(--chief-accent); }
+  .lede { margin: var(--chief-space-1) 0 0; color: var(--chief-muted); }
+  .warn {
+    margin: var(--chief-space-3) 0 0; padding: var(--chief-space-3) var(--chief-space-4);
+    border: 1px solid var(--chief-err); border-radius: var(--chief-radius-sm);
+    background: var(--chief-err-dim); color: var(--chief-text);
+  }
+
+  /* tweak panel */
+  .panel {
+    position: sticky; top: 0; z-index: 20;
+    background: var(--chief-surface);
+    border-bottom: 1px solid var(--chief-border);
+    box-shadow: 0 6px 18px var(--chief-backdrop);
+  }
+  .panel summary {
+    cursor: pointer; list-style: none; padding: var(--chief-space-3) 0;
+    font-weight: 700; color: var(--chief-text); user-select: none;
+  }
+  .panel summary::-webkit-details-marker { display: none; }
+  .panel summary::before { content: "▸ "; color: var(--chief-accent); }
+  .panel details[open] summary::before { content: "▾ "; }
+  .controls {
+    display: flex; flex-wrap: wrap; align-items: center;
+    gap: var(--chief-space-3) var(--chief-space-5);
+    padding: 0 0 var(--chief-space-4);
+  }
+  .ctl { display: flex; align-items: center; gap: var(--chief-space-2); font-size: 14px; color: var(--chief-muted); }
+  .ctl output { min-width: 3.2em; color: var(--chief-text); font-family: var(--chief-font-mono); font-size: 13px; }
+  select, input[type="range"] { accent-color: var(--chief-accent); }
+  select {
+    background: var(--chief-surface-2); color: var(--chief-text);
+    border: 1px solid var(--chief-border-strong); border-radius: var(--chief-radius-sm);
+    padding: var(--chief-space-1) var(--chief-space-2); font: inherit; font-size: 14px;
+  }
+  input[type="range"] { width: 120px; }
+  input[type="color"] {
+    width: 40px; height: 28px; padding: 0; border: 1px solid var(--chief-border-strong);
+    border-radius: var(--chief-radius-sm); background: var(--chief-surface-2); cursor: pointer;
+  }
+  input[type="checkbox"] { accent-color: var(--chief-accent); width: 18px; height: 18px; }
+  .btns { display: flex; gap: var(--chief-space-2); flex-wrap: wrap; }
+  .btn {
+    appearance: none; border: 1px solid var(--chief-accent); border-radius: var(--chief-radius-pill);
+    background: var(--chief-accent); color: var(--chief-accent-ink);
+    padding: var(--chief-space-2) var(--chief-space-4); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
+  }
+  .btn:hover { filter: brightness(1.08); }
+  .btn:focus-visible, select:focus-visible, input:focus-visible, .panel summary:focus-visible {
+    outline: 2px solid var(--chief-accent); outline-offset: 2px;
+  }
+  .btn-ghost { background: transparent; color: var(--chief-text); border-color: var(--chief-border-strong); }
+  .btn-ghost:hover { border-color: var(--chief-accent); filter: none; }
+
+  /* sections */
+  section { padding: var(--chief-space-7) 0 var(--chief-space-2); }
+  h2 { margin: 0 0 var(--chief-space-4); font-size: 20px; }
+  h2 small { color: var(--chief-muted); font-weight: 400; font-size: 14px; margin-left: var(--chief-space-2); }
+  .hint { color: var(--chief-muted); font-size: 14px; margin: calc(var(--chief-space-3) * -1) 0 var(--chief-space-4); }
+  .grid { display: flex; flex-wrap: wrap; gap: var(--chief-space-3); }
+
+  .hands { display: grid; gap: var(--chief-space-5); margin-top: var(--chief-space-5); }
+  .hand h3 { margin: 0 0 var(--chief-space-2); font-size: 14px; color: var(--chief-muted); font-weight: 600; }
+  .hand-row { display: flex; overflow-x: auto; padding: var(--chief-space-2) var(--chief-space-2) var(--chief-space-3); }
+  .hand-row .cc-card { transition: transform .15s ease; animation: deal .35s ease-out both; }
+  .hand-row .cc-card + .cc-card { margin-left: calc(var(--cc-w) * -0.58); }
+  .hand-row .cc-card:hover, .hand-row .cc-card:focus-visible { transform: translateY(-10px); z-index: 1; }
+  @keyframes deal { from { opacity: 0; transform: translateY(-24px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .hand-row .cc-card { animation: none; } }
+
+  .custom-row { display: flex; flex-wrap: wrap; gap: var(--chief-space-5); align-items: flex-start; }
+  pre, textarea {
+    background: var(--chief-surface); color: var(--chief-text);
+    border: 1px solid var(--chief-border); border-radius: var(--chief-radius-sm);
+    font-family: var(--chief-font-mono); font-size: 12.5px;
+  }
+  pre { margin: 0; padding: var(--chief-space-3) var(--chief-space-4); overflow-x: auto; flex: 1 1 320px; min-width: 0; }
+  .err-demo { margin-top: var(--chief-space-4); }
+  .hint.sub { margin: var(--chief-space-5) 0 var(--chief-space-2); }
+  .tpl-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: var(--chief-space-3); }
+  input[type="number"] {
+    width: 9em; background: var(--chief-surface-2); color: var(--chief-text);
+    border: 1px solid var(--chief-border-strong); border-radius: var(--chief-radius-sm);
+    padding: var(--chief-space-1) var(--chief-space-2); font: inherit; font-size: 14px;
+  }
+  pre.tpl-out:empty { display: none; }
+  .tpl-out { margin-top: var(--chief-space-4); }
+  .err-demo code { display: block; color: var(--chief-err); white-space: pre-wrap; font-family: var(--chief-font-mono); font-size: 13px; }
+
+  .export {
+    margin-top: var(--chief-space-3); padding: var(--chief-space-4);
+    background: var(--chief-surface-2); border: 1px solid var(--chief-border-strong); border-radius: var(--chief-radius);
+  }
+  .export textarea { width: 100%; min-height: 200px; padding: var(--chief-space-3); resize: vertical; }
+  .export .btns { margin-top: var(--chief-space-3); align-items: center; }
+  .status { color: var(--chief-ok); font-size: 14px; }
+
+  footer.foot { padding: var(--chief-space-8) 0 var(--chief-space-7); color: var(--chief-muted); font-size: 13px; }
+
+  @media (max-width: 600px) {
+    .wordmark { font-size: 24px; }
+    input[type="range"] { width: 96px; }
+    .controls { gap: var(--chief-space-3); }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1 class="wordmark">Chief<span class="name-accent">Cards</span> <small class="lede">PoC</small></h1>
+    <p class="lede">Zelf-gerenderde speelkaarten: SVG-strings uit één script, kleuren uit de brand-tokens, nul externe requests.</p>
+    <p class="warn" id="token-warn" hidden></p>
+  </header>
+</div>
+
+<div class="panel" id="panel">
+  <details class="wrap" open>
+    <summary>Tweaks</summary>
+    <div class="controls">
+      <label class="ctl">Deck <select id="opt-deck"></select></label>
+      <label class="ctl">Faces <select id="opt-face"></select></label>
+      <label class="ctl">Back <select id="opt-back"></select></label>
+      <label class="ctl">Size <input type="range" id="opt-size" min="56" max="200" step="2"><output id="out-size"></output></label>
+      <label class="ctl">Radius <input type="range" id="opt-radius" min="0" max="24" step="1"><output id="out-radius"></output></label>
+      <label class="ctl">Rood <input type="color" id="opt-red"></label>
+      <label class="ctl"><input type="checkbox" id="opt-down"> faceDown</label>
+      <div class="btns">
+        <button type="button" class="btn" id="btn-export">Export settings</button>
+        <button type="button" class="btn btn-ghost" id="btn-reset">Reset</button>
+      </div>
+    </div>
+    <div class="export" id="export-box" hidden>
+      <textarea id="export-json" readonly spellcheck="false" aria-label="Huidige settings als JSON"></textarea>
+      <div class="btns">
+        <button type="button" class="btn" id="btn-copy">Kopieer</button>
+        <button type="button" class="btn btn-ghost" id="btn-close">Sluit</button>
+        <span class="status" id="copy-status" role="status"></span>
+      </div>
+    </div>
+  </details>
+</div>
+
+<main class="wrap">
+  <section id="sec-deal">
+    <h2>Schudden &amp; delen</h2>
+    <p class="hint">Fisher-Yates met crypto.getRandomValues. Klik een kaart om ze om te draaien.</p>
+    <button type="button" class="btn" id="btn-deal">Shuffle &amp; deal 4 hands</button>
+    <div class="hands" id="hands"></div>
+  </section>
+
+  <section id="sec-full">
+    <h2>Volledig deck <small id="deck-info"></small></h2>
+    <p class="hint">Klik een kaart om te flippen (CSS 3D).</p>
+    <div class="grid" id="grid-full"></div>
+  </section>
+
+  <section id="sec-custom">
+    <h2>Custom kaarten</h2>
+    <p class="hint">Icon-registry ChiefCards.ICONS: in de deck-JSON volstaat meta.icon = "naam". Eén kaart per icoon.</p>
+    <div class="grid" id="grid-custom"></div>
+    <p class="hint sub">Config, geen code: custom_cards + templates uit decks/sats-demo.json (live uit BUILTIN_DECKS):</p>
+    <pre id="custom-code"></pre>
+    <div class="err-demo">
+      <p class="hint sub">Validatie bij loadDeck() van kapotte configs:</p>
+      <code id="err-out"></code>
+    </div>
+  </section>
+
+  <section id="sec-tpl">
+    <h2>Templates</h2>
+    <p class="hint">Kaarten die het spel tijdens het spelen aanmaakt: ChiefCards.fromTemplate("sats-demo", "bonus", {n}). Ingevulde waarden worden ge-escaped; leeg veld = fout "missing variable".</p>
+    <div class="tpl-ctl">
+      <label class="ctl">n <input type="number" id="tpl-n" value="500" min="0" step="1"></label>
+      <button type="button" class="btn" id="btn-tpl">Create bonus card</button>
+      <button type="button" class="btn btn-ghost" id="btn-tpl-clear">Wis</button>
+    </div>
+    <p class="err-demo"><code id="tpl-err" role="status"></code></p>
+    <div class="grid" id="grid-tpl"></div>
+    <pre id="tpl-out" class="tpl-out"></pre>
+  </section>
+
+  <footer class="foot">ChiefCards v<span id="ver"></span> · PoC · file:// werkt, geen server nodig.</footer>
+</main>
+
+<script src="../chief-cards.js"></script>
+<script>
+(function () {
+  'use strict';
+  var CC = window.ChiefCards;
+  function $(id) { return document.getElementById(id); }
+  var STORE_KEY = 'chief-cards-demo-v1';
+  var docEl = document.documentElement;
+
+  function token(name) { return getComputedStyle(docEl).getPropertyValue(name).trim(); }
+  function isColorValue(v) { return /^.[0-9a-f]{6}$/i.test(v) && v.charAt(0) === String.fromCharCode(35); }
+
+  var tokenRed = token('--chief-card-red');
+  var tokenRadius = parseFloat(token('--chief-radius-sm'));
+  var missing = ['--chief-bg', '--chief-card-face', '--chief-card-red', '--chief-accent'].filter(function (t) { return !token(t); });
+  if (missing.length) {
+    $('token-warn').hidden = false;
+    $('token-warn').textContent = 'Tokens ontbreken (' + missing.join(', ') + '): laadt ../../brand/chief-tokens.css wel?';
+  }
+
+  var DEFAULT_STATE = {
+    deck: 'standard',
+    faceStyle: CC.DEFAULTS.faceStyle,
+    backStyle: CC.DEFAULTS.backStyle,
+    size: 104,
+    radius: isNaN(tokenRadius) ? CC.DEFAULTS.radius : tokenRadius,
+    faceDown: false,
+    cardRed: tokenRed
+  };
+  var state = load();
+  var dealt = null;
+
+  function load() {
+    var s = {}, k, saved = null;
+    for (k in DEFAULT_STATE) s[k] = DEFAULT_STATE[k];
+    try { saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch (e) { saved = null; }
+    if (saved && typeof saved === 'object') for (k in DEFAULT_STATE) if (saved[k] !== undefined) s[k] = saved[k];
+    if (!CC.BUILTIN_DECKS[s.deck]) s.deck = DEFAULT_STATE.deck;
+    if (CC.FACE_STYLES.indexOf(s.faceStyle) < 0) s.faceStyle = DEFAULT_STATE.faceStyle;
+    if (CC.BACK_STYLES.indexOf(s.backStyle) < 0) s.backStyle = DEFAULT_STATE.backStyle;
+    if (!isColorValue(s.cardRed)) s.cardRed = DEFAULT_STATE.cardRed;
+    return s;
+  }
+  function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* private mode: ignore */ } }
+
+  function opts(extra) {
+    var o = { size: state.size, radius: state.radius, faceStyle: state.faceStyle, backStyle: state.backStyle, faceDown: state.faceDown };
+    for (var k in extra || {}) o[k] = extra[k];
+    return o;
+  }
+
+  function deckCards() { return CC.loadDeck(CC.BUILTIN_DECKS[state.deck]); }
+
+  /* ---- controls ---- */
+  function fillSelect(el, values) {
+    el.innerHTML = values.map(function (v) { return '<option value="' + v + '">' + v + '</option>'; }).join('');
+  }
+  fillSelect($('opt-deck'), Object.keys(CC.BUILTIN_DECKS));
+  fillSelect($('opt-face'), CC.FACE_STYLES);
+  fillSelect($('opt-back'), CC.BACK_STYLES);
+
+  function syncControls() {
+    $('opt-deck').value = state.deck;
+    $('opt-face').value = state.faceStyle;
+    $('opt-back').value = state.backStyle;
+    $('opt-size').value = state.size;
+    $('out-size').textContent = state.size + 'px';
+    $('opt-radius').value = state.radius;
+    $('out-radius').textContent = state.radius + 'px';
+    if (isColorValue(state.cardRed)) $('opt-red').value = state.cardRed;
+    $('opt-down').checked = state.faceDown;
+    applyRed();
+  }
+  function applyRed() {
+    if (isColorValue(state.cardRed) && state.cardRed.toLowerCase() !== tokenRed.toLowerCase()) {
+      docEl.style.setProperty('--chief-card-red', state.cardRed);   // demo-pagina only
+    } else {
+      docEl.style.removeProperty('--chief-card-red');
+    }
+  }
+
+  var pending = 0;
+  function rerender() {
+    if (pending) return;
+    pending = requestAnimationFrame(function () { pending = 0; renderAll(); });
+  }
+
+  function bind(id, key, parse, evName) {
+    $(id).addEventListener(evName || 'change', function (e) {
+      state[key] = parse(e.target);
+      if (key === 'deck') dealt = null;
+      save(); syncControls(); rerender();
+    });
+  }
+  bind('opt-deck', 'deck', function (t) { return t.value; });
+  bind('opt-face', 'faceStyle', function (t) { return t.value; });
+  bind('opt-back', 'backStyle', function (t) { return t.value; });
+  bind('opt-size', 'size', function (t) { return +t.value; }, 'input');
+  bind('opt-radius', 'radius', function (t) { return +t.value; }, 'input');
+  bind('opt-down', 'faceDown', function (t) { return t.checked; });
+  $('opt-red').addEventListener('input', function (e) { state.cardRed = e.target.value; applyRed(); save(); });
+
+  $('btn-reset').addEventListener('click', function () {
+    var k; for (k in DEFAULT_STATE) state[k] = DEFAULT_STATE[k];
+    dealt = null; save(); syncControls(); renderAll();
+  });
+
+  /* ---- export ---- */
+  function exportJSON() {
+    return JSON.stringify({
+      chiefCards: {
+        version: CC.VERSION,
+        defaults: { size: state.size, radius: state.radius, faceStyle: state.faceStyle, backStyle: state.backStyle, faceDown: state.faceDown },
+        deck: state.deck,
+        tokens: { '--chief-card-red': state.cardRed },
+        tokenChanged: state.cardRed.toLowerCase() !== tokenRed.toLowerCase()
+      }
+    }, null, 2);
+  }
+  $('btn-export').addEventListener('click', function () {
+    $('export-json').value = exportJSON();
+    $('export-box').hidden = false;
+    $('copy-status').textContent = '';
+    $('export-json').focus();
+    $('export-json').select();
+  });
+  $('btn-close').addEventListener('click', function () { $('export-box').hidden = true; });
+  $('btn-copy').addEventListener('click', function () {
+    var ta = $('export-json'), text = ta.value;
+    function done(ok) { $('copy-status').textContent = ok ? 'Gekopieerd.' : 'Kopiëren mislukt: selecteer en kopieer manueel.'; }
+    function fallback() {
+      ta.focus(); ta.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+      done(ok);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { done(true); }, fallback);
+    } else {
+      fallback();
+    }
+  });
+
+  /* ---- deal ---- */
+  function sortHand(hand) {
+    var src = CC.BUILTIN_DECKS[state.deck], suits = src.suits || [], ranks = src.ranks || [], order = {};
+    deckCards().forEach(function (c, i) { order[c.id] = i; });          // custom cards: deck order
+    return hand.slice().sort(function (a, b) {
+      var sa = suits.indexOf(a.suit), sb = suits.indexOf(b.suit);
+      if (sa < 0) sa = 99; if (sb < 0) sb = 99;
+      if (sa !== sb) return sa - sb;
+      return (ranks.indexOf(a.rank) - ranks.indexOf(b.rank)) || (order[a.id] - order[b.id]);
+    });
+  }
+  function deal() {
+    var shuffled = CC.shuffle(deckCards());
+    var per = Math.floor(shuffled.length / 4), hands = [[], [], [], []];
+    for (var i = 0; i < per * 4; i++) hands[i % 4].push(shuffled[i]);
+    dealt = { hands: hands.map(function (h) { return sortHand(h); }), stock: shuffled.slice(per * 4) };
+    renderHands();
+  }
+  $('btn-deal').addEventListener('click', deal);
+
+  function renderHands() {
+    var el = $('hands');
+    if (!dealt) { el.innerHTML = ''; return; }
+    var html = dealt.hands.map(function (h, i) {
+      return '<div class="hand"><h3>Hand ' + (i + 1) + ' · ' + h.length + ' kaarten</h3><div class="hand-row">' +
+        h.map(function (c, j) {
+          return CC.flipHTML(c, opts()).replace('<button ', '<button style="animation-delay:' + (j * 25 + i * 8) + 'ms" ');
+        }).join('') + '</div></div>';
+    });
+    if (dealt.stock.length) {
+      html.push('<div class="hand"><h3>Stapel · ' + dealt.stock.length + ' kaarten</h3><div class="hand-row">' +
+        dealt.stock.map(function (c) { return CC.flipHTML(c, opts({ faceDown: true })); }).join('') + '</div></div>');
+    }
+    el.innerHTML = html.join('');
+  }
+
+  /* ---- custom cards: one card per registry icon ---- */
+  var DARK = { faceToken: '--chief-bg', colorToken: '--chief-text', iconColorToken: '--chief-accent' };
+  var ICON_LOOK = { bitcoin: DARK, plus4: DARK, crown: DARK, wild: { faceToken: '--chief-bg', colorToken: '--chief-text' },
+    plus2: { colorToken: '--chief-card-red' } };
+  var ICON_CARDS = Object.keys(CC.ICONS).map(function (name) {
+    var meta = { label: '', title: name.toUpperCase(), icon: name }, look = ICON_LOOK[name] || {};
+    for (var k in look) meta[k] = look[k];
+    return { id: 'icon-' + name, suit: 'custom', rank: name.slice(0, 6), meta: meta };
+  });
+
+  /* config sample = the real sats-demo JSON (BUILTIN_DECKS), not a copy */
+  var SATS = CC.BUILTIN_DECKS['sats-demo'];
+  $('custom-code').textContent = JSON.stringify({ custom_cards: SATS.custom_cards, templates: SATS.templates }, null, 2);
+
+  var BAD = [
+    { name: 'kapot', suits: ['hearts', 'stars'], ranks: ['A'] },
+    { name: 'kapot', custom_cards: [{ id_prefix: 'x', rank: 'X', count: 1, meta: { icon: 'rocket' } }] },
+    { name: 'kapot', custom_cards: [{ id_prefix: 'x', rank: 'X', count: 1, meta: { colorToken: '--red' } }] },
+    { name: 'kapot', custom_cards: [{ id_prefix: 'x', rank: 'X', count: 0 }] },
+    { name: 'kapot', custom_cards: [{ id_prefix: 'x', rank: 'X', count: 1 }, { id_prefix: 'x', rank: 'Y', count: 1 }] },
+    { name: 'kapot', custom_cards: [{ rank: 'X', count: 1 }] }
+  ];
+  $('err-out').textContent = BAD.map(function (cfg) {
+    try { CC.loadDeck(cfg); return '(geen fout?!)'; } catch (e) { return e.message; }
+  }).join('\n');
+
+  /* ---- templates ---- */
+  var tplCards = [];
+  function renderTpl() { $('grid-tpl').innerHTML = tplCards.map(function (c) { return CC.flipHTML(c, opts()); }).join(''); }
+  $('btn-tpl').addEventListener('click', function () {
+    var raw = $('tpl-n').value.trim();
+    var val = raw === '' ? undefined : (isFinite(+raw) ? +raw : raw);
+    try {
+      var card = CC.fromTemplate('sats-demo', 'bonus', { n: val });
+      tplCards.push(card);
+      $('tpl-err').textContent = '';
+      $('tpl-out').textContent = JSON.stringify(card, null, 2);
+      renderTpl();
+    } catch (e) {
+      $('tpl-err').textContent = e.message;
+    }
+  });
+  $('btn-tpl-clear').addEventListener('click', function () {
+    tplCards = []; $('tpl-out').textContent = ''; $('tpl-err').textContent = ''; renderTpl();
+  });
+
+  /* ---- render ---- */
+  function renderAll() {
+    var cards = deckCards();
+    var src = CC.BUILTIN_DECKS[state.deck];
+    $('deck-info').textContent = cards.length + ' kaarten · ' + (src.description || src.name);
+    $('grid-full').innerHTML = cards.map(function (c) { return CC.flipHTML(c, opts()); }).join('');
+    $('grid-custom').innerHTML = ICON_CARDS.map(function (c) { return CC.flipHTML(c, opts()); }).join('');
+    renderHands();
+    renderTpl();
+  }
+
+  CC.bindFlip(document.body);
+  $('ver').textContent = CC.VERSION;
+  syncControls();
+  renderAll();
+})();
+</script>
+</body>
+</html>
