@@ -10,7 +10,7 @@ begint met een `GENERATED`-kopregel met de sha256 van de bron; een handbewerking
 ## Inhoud
 | Bestand | Wat |
 |---|---|
-| `chief-tokens.css` | `:root`-set `--chief-*`: kleuren, radius, fonts, spacing. Eén donker thema, geen light-variant. Plus grafiekreeks `--chief-chart-2(-dim)` en het printpalet `--chief-print-*` (wit papier, enkel voor PDF/print-export, geen schermthema) |
+| `chief-tokens.css` | `:root`-set `--chief-*`: kleuren, radius, fonts, spacing. Eén donker thema, geen light-variant. Plus grafiekreeks `--chief-chart-2(-dim)`, het crème dobbelsteenvlak `--chief-die` (ChiefDice, ChiefYatzy; ogen = `--chief-bg`) en het printpalet `--chief-print-*` (wit papier, enkel voor PDF/print-export, geen schermthema) |
 | `fonts/fonts.css` | catalogus met alle `@font-face`-blokken (relatieve `url("…woff2")`). Per site wordt een fonts.css gegenereerd met enkel de gekozen families |
 | `fonts/*.woff2` | Latin-subsets, worden byte-identiek gekopieerd |
 | `fonts/OFL-*.txt` | SIL Open Font License 1.1 per font, worden byte-identiek meegekopieerd |
