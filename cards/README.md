@@ -57,7 +57,7 @@ De SVG gebruikt `style="fill:var(--chief-…)"`: ze moet **inline** in een docum
 | `variant` | joker: `accent` \| `ink` |
 
 Op gewone kaarten vervangen `icon`/`iconPath` de suit-pip. Paths worden gevalideerd (enkel path-commando's en getallen),
-tekst wordt ge-escaped.
+tekst wordt in `render()` ge-escaped (kaartdata = ruwe tekst).
 
 ## Icon-registry `ChiefCards.ICONS`
 `plus2`, `plus4`, `bitcoin`, `skip`, `reverse`, `wild` (4 segmenten: `--chief-card-red`, `--chief-accent`,
@@ -96,8 +96,9 @@ icoonkleur van de kaart, `colorToken: "@face"` = de kleur van het kaartvlak (bv.
 var card = ChiefCards.fromTemplate('sats-demo', 'bonus', { n: 500 });
 // → {id: "sats-demo-bonus-1-…", suit: "custom", rank: "BONUS", meta: {label: "500", title: "500 SATS", …, template: "bonus"}}
 ```
-- Elke ingevulde waarde wordt XML/HTML-ge-escaped (`<script>` → `&lt;script&gt;`); `render()` escapet dat niet opnieuw.
-  Toon `meta.label`/`meta.title` elders dus via `innerHTML`, of decodeer eerst.
+- Ingevulde waarden blijven **ruwe tekst** in `rank`/`meta.label`/`meta.title` (`<script>` blijft `<script>`); enkel `render()`
+  escapet, exact één keer. Toon meta-tekst buiten `render()` altijd via `textContent`, nooit via `innerHTML`. (v0.3.0; tot v0.2.0
+  gaf `fromTemplate` HTML-ge-escapete tekst terug.)
 - Ontbrekende variabele (of `null`) → `Error('… missing variable "n" …')`; enkel strings en eindige getallen; te lang na invullen → Error.
 - Id = `<deck>-<template>-<volgnummer>-<random>` (uniek per sessie, botst niet met deck-id's).
 

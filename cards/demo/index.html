@@ -190,7 +190,7 @@
 
   <section id="sec-tpl">
     <h2>Templates</h2>
-    <p class="hint">Kaarten die het spel tijdens het spelen aanmaakt: ChiefCards.fromTemplate("sats-demo", "bonus", {n}). Ingevulde waarden worden ge-escaped; leeg veld = fout "missing variable".</p>
+    <p class="hint">Kaarten die het spel tijdens het spelen aanmaakt: ChiefCards.fromTemplate("sats-demo", "bonus", {n}). Ingevulde waarden blijven ruwe tekst (render() escapet); leeg veld = fout "missing variable".</p>
     <div class="tpl-ctl">
       <label class="ctl">n <input type="number" id="tpl-n" value="500" min="0" step="1"></label>
       <button type="button" class="btn" id="btn-tpl">Create bonus card</button>

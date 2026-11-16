@@ -6,7 +6,7 @@
 (function (root) {
   'use strict';
 
-  var VERSION = '0.2.0';
+  var VERSION = '0.3.0';
   var W = 250, H = 350, CX = 125, CY = 175;            // viewBox (poker ratio 5:7)
 
   var SUITS = ['spades', 'hearts', 'diamonds', 'clubs'];
@@ -143,12 +143,13 @@
   var hasOwn = function (o, k) { return Object.prototype.hasOwnProperty.call(o, k); };
 
   function n(x) { return Math.round(x * 100) / 100; }
-  /* XML escape; already-escaped entities (from fromTemplate) are kept, never double-escaped */
+  /* XML escape for text + attribute values. Card data (rank, meta.label/title, ids) is always RAW text;
+     render() escapes it exactly once here. "&amp;" in the data is literal text and renders as "&amp;". */
   function esc(s) {
-    return String(s).replace(/&(?!(?:amp|lt|gt|quot|apos);)/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;').replace(/'/g, '&apos;');
   }
-  function displayLen(s) { return String(s).replace(/&(?:amp|lt|gt|quot|apos);/g, 'x').length; }
+  function displayLen(s) { return String(s).length; }
   function isObj(o) { return !!o && typeof o === 'object' && !Array.isArray(o); }
   function tok(t, fallback) { return (typeof t === 'string' && TOKEN_RE.test(t)) ? t : fallback; }
   function fill(t) { return 'fill:var(' + t + ')'; }
@@ -702,7 +703,8 @@
   /* ---------------------------------- templates ---------------------------------- */
   var templateSeq = 0;
 
-  /* deck = deck JSON (object/string) or a BUILTIN_DECKS name; vars fill {placeholders} (HTML/XML-escaped) */
+  /* deck = deck JSON (object/string) or a BUILTIN_DECKS name; vars fill {placeholders} as RAW text
+     (meta stays plain text: show it with textContent; render() does the escaping) */
   function fromTemplate(deck, templateName, vars) {
     var src = deck;
     if (typeof deck === 'string' && hasOwn(BUILTIN_DECKS, deck)) src = BUILTIN_DECKS[deck];
@@ -719,7 +721,7 @@
         if (!hasOwn(vars, key) || vars[key] === undefined || vars[key] === null) throw new Error(where + 'missing variable "' + key + '" (in ' + field + ')');
         var val = vars[key];
         if (typeof val !== 'string' && !(typeof val === 'number' && isFinite(val))) throw new Error(where + 'variable "' + key + '" must be a string or number');
-        return esc(String(val));
+        return String(val);
       });
       var max = field === 'rank' ? MAX.rank : MAX[field];
       if (displayLen(out) > max) throw new Error(where + field + ' "' + out + '" is too long after filling in (max ' + max + ' chars)');
