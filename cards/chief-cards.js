@@ -106,6 +106,19 @@
         {"rank": "JOKER", "meta": {"variant": "ink"}}
       ]
     },
+    "rami": {
+      "name": "rami",
+      "description": "Rami: two full 52-card decks + 4 jokers (108 cards)",
+      "suits": ["spades", "hearts", "diamonds", "clubs"],
+      "ranks": ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"],
+      "copies": 2,
+      "extra_cards": [
+        {"rank": "JOKER", "meta": {"variant": "accent"}},
+        {"rank": "JOKER", "meta": {"variant": "accent"}},
+        {"rank": "JOKER", "meta": {"variant": "ink"}},
+        {"rank": "JOKER", "meta": {"variant": "ink"}}
+      ]
+    },
     "sats-demo": {
       "name": "sats-demo",
       "description": "Standaard 52 + 4 HODL-kaarten + template bonus (kaart die het spel aanmaakt)",

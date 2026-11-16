@@ -12,7 +12,7 @@ Decks zijn **config, geen code**: standaardkaarten, custom kaarten en runtime-te
 |---|---|
 | `chief-cards.js` | library → `window.ChiefCards` (onder node ook `module.exports`) |
 | `chief-cards.css` | flip-widget (`.cc-card`, 3D-flip) |
-| `decks/*.json` | **de bron**: `standard` (54), `manillen` (32), `pesten` (54), `jinx-demo` (32, volledig custom), `sats-demo` (56 + template) |
+| `decks/*.json` | **de bron**: `standard` (54), `manillen` (32), `pesten` (54), `jinx-demo` (32, volledig custom), `sats-demo` (56 + template), `rami` (108: `copies: 2` + 4 jokers) |
 | `demo/index.html` | testpagina + tweak-paneel |
 
 ## Demo openen
