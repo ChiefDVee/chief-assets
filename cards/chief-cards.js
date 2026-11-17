@@ -6,7 +6,7 @@
 (function (root) {
   'use strict';
 
-  var VERSION = '0.3.0';
+  var VERSION = '0.4.0';
   var W = 250, H = 350, CX = 125, CY = 175;            // viewBox (poker ratio 5:7)
 
   var SUITS = ['spades', 'hearts', 'diamonds', 'clubs'];
@@ -772,10 +772,57 @@
     return a;
   }
 
+  /* ------------------------- mount: CSP-safe DOM insert ------------------------- */
+  /* render() colours via style="fill:var(--chief-…)". Under a strict CSP (style-src without 'unsafe-inline') style
+     attributes in markup are blocked, and DOMParser also reports a violation. splitStyles() is the pure step:
+     every style="…" becomes data-cc-s="<index>" and the declarations go to a list. render() escapes " in text as
+     &quot;, so the pattern only ever matches attributes. Joining them back gives render()'s string byte for byte. */
+  var STYLE_ATTR_RE = / style="([^"]*)"/g, STASH_ATTR = 'data-cc-s';
+  function splitStyles(svg) {
+    if (typeof svg !== 'string' || svg.indexOf('<svg') !== 0) throw new Error('ChiefCards.splitStyles: expects an SVG string from render()');
+    var styles = [];
+    var markup = svg.replace(STYLE_ATTR_RE, function (_m, css) {
+      styles.push(css);
+      return ' ' + STASH_ATTR + '="' + (styles.length - 1) + '"';
+    });
+    return { markup: markup, styles: styles };
+  }
+  function applyDecls(el, css) {
+    var parts = String(css).split(';');
+    for (var i = 0; i < parts.length; i++) {
+      var k = parts[i].indexOf(':');
+      if (k > 0) el.style.setProperty(parts[i].slice(0, k).trim(), parts[i].slice(k + 1).trim());
+    }
+  }
+  /* mount(el, svg): replaces the children of el with the SVG (DOMParser + importNode, never innerHTML); styles go via
+     CSSOM (el.style.setProperty), which a CSP does not block. Returns the inserted <svg> element. Only the DOM step lives
+     here; the transformation is splitStyles(). Same result as ChiefShuffle's svgNode() helper, plus the insert. */
+  function mount(el, svg) {
+    if (!el || el.nodeType !== 1) throw new Error('ChiefCards.mount: el must be a DOM element');
+    var parts = splitStyles(svg);
+    var doc = el.ownerDocument;
+    var Parser = (doc.defaultView && doc.defaultView.DOMParser) || root.DOMParser;
+    var parsed = new Parser().parseFromString(parts.markup, 'image/svg+xml').documentElement;
+    if (!parsed || parsed.nodeName.toLowerCase() !== 'svg' || parsed.getElementsByTagName('parsererror').length) {
+      throw new Error('ChiefCards.mount: markup is not a valid SVG');
+    }
+    var node = doc.importNode(parsed, true);
+    var marked = [node].concat(Array.prototype.slice.call(node.querySelectorAll('[' + STASH_ATTR + ']')));
+    for (var i = 0; i < marked.length; i++) {
+      if (!marked[i].hasAttribute(STASH_ATTR)) continue;
+      var idx = +marked[i].getAttribute(STASH_ATTR);
+      marked[i].removeAttribute(STASH_ATTR);
+      if (idx >= 0 && idx < parts.styles.length) applyDecls(marked[i], parts.styles[idx]);
+    }
+    while (el.firstChild) el.removeChild(el.firstChild);
+    el.appendChild(node);
+    return node;
+  }
+
   var api = {
     VERSION: VERSION, DEFAULTS: DEFAULTS, SUITS: SUITS, RANKS: RANKS, SUIT_PATHS: SUIT_PATHS, ICONS: ICONS,
     FACE_STYLES: FACE_STYLES, BACK_STYLES: BACK_STYLES, BUILTIN_DECKS: BUILTIN_DECKS,
-    render: render, flipHTML: flipHTML, bindFlip: bindFlip,
+    render: render, flipHTML: flipHTML, bindFlip: bindFlip, splitStyles: splitStyles, mount: mount,
     validateDeck: validateDeck, loadDeck: loadDeck, fromTemplate: fromTemplate, shuffle: shuffle
   };
   root.ChiefCards = api;

@@ -5,7 +5,7 @@ kleuren/fonts enkel via `var(--chief-*)` uit `../brand/chief-tokens.css`, nul ex
 Kleuren ♠♥♦♣ zijn handgetekende SVG-paths: geen tekstglyphs (iOS maakt van ♥♦ emoji).
 Decks zijn **config, geen code**: standaardkaarten, custom kaarten en runtime-templates staan in de deck-JSON.
 
-**Status: proof of concept.** Nog geen enkele site gebruikt dit.
+**Status:** in gebruik op chiefshuffle.com en chiefcount.com, telkens via een vendor-kopie (`static/vendor/chief-cards-<versie>.js` + LICENSE).
 
 ## Bestanden
 | Bestand | Wat |
@@ -26,6 +26,8 @@ faceDown. "Export settings" geeft de huidige keuzes als JSON om als defaults in 
 ## API
 ```js
 ChiefCards.render(card, opts)                  // → SVG-string. card = {id, suit, rank, meta}
+ChiefCards.mount(el, svg)                      // CSP-veilig: vervangt de inhoud van el door de SVG; geeft het <svg>-element terug (v0.4.0)
+ChiefCards.splitStyles(svg)                    // pure stap van mount: → {markup (style="…" → data-cc-s="i"), styles: [css, …]}
 ChiefCards.flipHTML(card, opts)                // → <button class="cc-card"> met voor- en achterkant (CSS 3D-flip)
 ChiefCards.bindFlip(el)                        // klik-delegatie: toggelt .is-flipped; geeft een unbind-functie terug
 ChiefCards.loadDeck(json)                      // object of JSON-string → array kaarten; Error bij foute config
@@ -41,6 +43,16 @@ ChiefCards.DEFAULTS / SUITS / RANKS / SUIT_PATHS / FACE_STYLES / BACK_STYLES / V
 
 De SVG gebruikt `style="fill:var(--chief-…)"`: ze moet **inline** in een document staan dat `chief-tokens.css` laadt
 (als `<img>`/data-URI resolven de variabelen niet).
+
+**Strikte CSP** (`style-src` zonder `'unsafe-inline'`): style-attributen in markup worden geblokkeerd, en ook DOMParser
+meldt dan een overtreding. Gebruik daarom `ChiefCards.mount(el, ChiefCards.render(card, opts))`, nooit `innerHTML`:
+- `splitStyles()` hernoemt elk `style="…"` naar `data-cc-s="<index>"` en zet de declaraties in een lijst. Weer samenvoegen geeft byte voor byte de `render()`-string.
+- `mount()` parset die markup via DOMParser (`image/svg+xml`), doet `importNode` in het document van `el` en zet de stijlen via CSSOM (`el.style.setProperty`), wat een CSP niet blokkeert.
+- Daarna verdwijnt elk `data-cc-s` en vervangt de SVG alle kinderen van `el`.
+- CSSOM-stijlen staan daarna wel als `style` in de geserialiseerde DOM (`outerHTML`). Dat is normaal en geen CSP-overtreding.
+
+**Verborgen kaarten:** render een neutrale dummy zonder `id` (`render({suit: 'spades', rank: '?'}, {faceDown: true})`).
+Een kaart met `id` krijgt `data-card-id`, en `flipHTML()` bevat altijd de voorkant.
 
 ## Kaart-object en `meta`
 - Gewone kaart: `{id, suit: "spades"|"hearts"|"diamonds"|"clubs", rank: "A".."10"|"J"|"Q"|"K", meta: {}}`
