@@ -27,6 +27,12 @@
     background: var(--chief-err-dim);
   }
   .warn[hidden] { display: none; }
+  .global {
+    position: sticky; top: 0; z-index: 2;
+    display: flex; flex-wrap: wrap; gap: var(--chief-space-4); align-items: flex-end;
+    padding: var(--chief-space-3) var(--chief-space-4);
+    background: var(--chief-surface); border: 1px solid var(--chief-border); border-radius: var(--chief-radius);
+  }
   section {
     margin-top: var(--chief-space-6); padding: var(--chief-space-4);
     background: var(--chief-surface); border: 1px solid var(--chief-border); border-radius: var(--chief-radius);
@@ -38,11 +44,15 @@
   figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: var(--chief-space-1); }
   figcaption { color: var(--chief-muted); font-size: 12px; font-family: var(--chief-font-mono); }
   .slot { line-height: 0; }
+  .rack {
+    display: inline-flex; gap: var(--chief-space-1); padding: var(--chief-space-2) var(--chief-space-2) var(--chief-space-3);
+    background: var(--chief-surface-2); border: 1px solid var(--chief-border-strong); border-radius: var(--chief-radius-sm);
+  }
   .controls { display: flex; flex-wrap: wrap; gap: var(--chief-space-4); margin-bottom: var(--chief-space-4); }
   label { display: flex; flex-direction: column; gap: var(--chief-space-1); font-size: 13px; color: var(--chief-muted); }
   label.inline { flex-direction: row; align-items: center; gap: var(--chief-space-2); }
   input[type="text"], input[type="number"] {
-    width: 96px; padding: var(--chief-space-2) var(--chief-space-3);
+    width: 120px; padding: var(--chief-space-2) var(--chief-space-3);
     background: var(--chief-surface-2); color: var(--chief-text);
     border: 1px solid var(--chief-border-strong); border-radius: var(--chief-radius-sm); font: inherit;
   }
@@ -55,19 +65,24 @@
 <div class="wrap">
   <header>
     <h1 class="wordmark">Chief<span class="name-accent">Tiles</span></h1>
-    <p class="lede">Letter tile design preview. SVG strings from one script, colours from the brand tokens, zero external requests.</p>
+    <p class="lede">Letter tile design preview. Monoline SVG glyphs (no fonts), colours from the brand tokens, zero external requests.</p>
     <p class="lede">Version <code id="version"></code> · design proof of concept, not final.</p>
     <p class="warn" id="token-warn" hidden></p>
   </header>
 
+  <div class="global">
+    <label>Size <span id="size-out"></span><input type="range" id="in-size" min="32" max="128" value="64"></label>
+    <label>Stroke <span id="stroke-out"></span><input type="range" id="in-stroke" min="4" max="10" step="0.5" value="7"></label>
+    <label>Back label <input type="text" id="in-label" maxlength="12" value="ChiefWords" autocomplete="off" spellcheck="false"></label>
+  </div>
+
   <section>
     <h2>Try a tile</h2>
-    <p class="hint">Type a letter (1-3 characters, e.g. IJ or QU) and a value; both face styles update live.</p>
+    <p class="hint">One letter A-Z for a game tile (render() takes up to 3 characters, e.g. QU for a later die face) and a value 0-99. Size, stroke and back label come from the bar above.</p>
     <div class="controls">
-      <label>Letter <input type="text" id="in-letter" maxlength="3" value="IJ" autocomplete="off" spellcheck="false"></label>
-      <label>Value <input type="number" id="in-value" min="0" max="99" value="4"></label>
-      <label>Size <span id="size-out"></span><input type="range" id="in-size" min="32" max="200" value="128"></label>
-      <label>Radius <span id="radius-out"></span><input type="range" id="in-radius" min="0" max="40" value="16"></label>
+      <label>Letter <input type="text" id="in-letter" maxlength="3" value="Q" autocomplete="off" spellcheck="false"></label>
+      <label>Value <input type="number" id="in-value" min="0" max="99" value="10"></label>
+      <label>Radius <span id="radius-out"></span><input type="range" id="in-radius" min="0" max="40" value="8"></label>
       <label class="inline"><input type="checkbox" id="in-blank"> blank</label>
       <label class="inline"><input type="checkbox" id="in-down"> face down</label>
     </div>
@@ -76,21 +91,33 @@
   </section>
 
   <section>
+    <h2>Rack on a phone</h2>
+    <p class="hint">Seven tiles at 44 px, roughly what a rack looks like on an iPhone.</p>
+    <div id="rack-rows"></div>
+  </section>
+
+  <section>
+    <h2>Alphabet A-Z</h2>
+    <p class="hint">Every glyph once, placeholder values (not a distribution).</p>
+    <div id="alpha-rows"></div>
+  </section>
+
+  <section>
+    <h2>Digits 0-9</h2>
+    <p class="hint">The value digits as tile letters (render() accepts digits; a set tile is always one letter A-Z).</p>
+    <div id="digit-rows"></div>
+  </section>
+
+  <section>
+    <h2>Blanks and backs</h2>
+    <p class="hint">Blank (empty and playing E), the back without a label and with ChiefWords, ChiefGrid and the label field.</p>
+    <div id="special-rows"></div>
+  </section>
+
+  <section>
     <h2>Demo set</h2>
     <p class="hint" id="set-hint"></p>
     <div id="set-rows"></div>
-  </section>
-
-  <section>
-    <h2>Sizes</h2>
-    <p class="hint">32 / 48 / 64 / 96 px, letter A and Z (two-digit value).</p>
-    <div id="size-rows"></div>
-  </section>
-
-  <section>
-    <h2>Special tiles</h2>
-    <p class="hint">Multi-character letter, blank (empty and with a chosen letter) and the face-down back.</p>
-    <div id="special-rows"></div>
   </section>
 </div>
 
@@ -99,8 +126,12 @@
 (function () {
   'use strict';
   var CT = window.ChiefTiles;
+  var ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  var DIGITS = '0123456789'.split('');
+  var RACK = [['Q', 10], ['U', 2], ['A', 1], ['M', 3], ['W', 5], ['I', 1], ['S', 2]];
   function $(id) { return document.getElementById(id); }
   function el(tag, cls) { var e = document.createElement(tag); if (cls) e.className = cls; return e; }
+  function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
 
   /* tile + caption; SVG via ChiefTiles.mount (never innerHTML), caption via textContent */
   function figure(tile, opts, caption) {
@@ -111,12 +142,26 @@
     return f;
   }
   function styleBlock(host, build) {
+    clear(host);
     CT.FACE_STYLES.forEach(function (fs) {
       var lab = el('p', 'style-label'), row = el('div', 'row');
       lab.textContent = fs;
       build(row, fs);
       host.appendChild(lab); host.appendChild(row);
     });
+  }
+  function g() {
+    return { size: +$('in-size').value, stroke: +$('in-stroke').value };
+  }
+  function opts(fs, extra) {
+    var o = g(), k;
+    o.faceStyle = fs;
+    if (extra) for (k in extra) o[k] = extra[k];
+    return o;
+  }
+  function label() {
+    var v = $('in-label').value.trim();
+    return v ? v : null;
   }
 
   $('version').textContent = CT.VERSION;
@@ -130,57 +175,85 @@
     $('token-warn').textContent = 'Tokens missing (' + missing.join(', ') + '): is ../brand/chief-tokens.css loaded?';
   }
 
-  /* demo set: every letter once + one blank */
   var set = CT.BUILTIN_SETS.demo;
   $('set-hint').textContent = set.name + ' · lang ' + set.lang + ' · ' + CT.loadSet('demo').length + ' tiles in the bag (' +
     set.tiles.length + ' letters + ' + set.blanks + ' blanks)';
-  styleBlock($('set-rows'), function (row, fs) {
-    set.tiles.forEach(function (t) {
-      row.appendChild(figure({ letter: t.letter, value: t.value }, { faceStyle: fs }, t.letter + ' ×' + t.count));
-    });
-    row.appendChild(figure({ blank: true }, { faceStyle: fs }, 'blank ×' + set.blanks));
-  });
 
-  styleBlock($('size-rows'), function (row, fs) {
-    [32, 48, 64, 96].forEach(function (s) {
-      row.appendChild(figure({ letter: 'A', value: 1 }, { faceStyle: fs, size: s }, s + 'px'));
-    });
-    [32, 48, 64, 96].forEach(function (s) {
-      row.appendChild(figure({ letter: 'Z', value: 10 }, { faceStyle: fs, size: s }, s + 'px'));
-    });
-  });
+  function drawAll() {
+    var o = g();
+    $('size-out').textContent = o.size + 'px';
+    $('stroke-out').textContent = String(o.stroke);
 
-  styleBlock($('special-rows'), function (row, fs) {
-    row.appendChild(figure({ letter: 'IJ', value: 4 }, { faceStyle: fs, size: 96 }, 'IJ'));
-    row.appendChild(figure({ letter: 'QU', value: 8 }, { faceStyle: fs, size: 96 }, 'QU'));
-    row.appendChild(figure({ blank: true }, { faceStyle: fs, size: 96 }, 'blank'));
-    row.appendChild(figure({ blank: true, letter: 'E' }, { faceStyle: fs, size: 96 }, 'blank as E'));
-    row.appendChild(figure({ letter: 'A', value: 1 }, { faceStyle: fs, size: 96, faceDown: true }, 'face down'));
-  });
+    styleBlock($('rack-rows'), function (row, fs) {
+      var rack = el('div', 'rack');
+      RACK.forEach(function (t) {
+        var slot = el('div', 'slot');
+        CT.mount(slot, CT.render({ letter: t[0], value: t[1] }, { faceStyle: fs, size: 44, stroke: o.stroke }));
+        rack.appendChild(slot);
+      });
+      row.appendChild(rack);
+    });
+
+    styleBlock($('alpha-rows'), function (row, fs) {
+      ALPHA.forEach(function (L, i) {
+        row.appendChild(figure({ letter: L, value: i < 20 ? (i % 9) + 1 : 10 + i }, opts(fs), L));
+      });
+    });
+
+    styleBlock($('digit-rows'), function (row, fs) {
+      DIGITS.forEach(function (d) {
+        row.appendChild(figure({ letter: d, value: +d }, opts(fs), d));
+      });
+    });
+
+    var lbl = null, lblErr = '';
+    try { CT.render({ letter: 'A', value: 1 }, { faceDown: true, backLabel: label() }); lbl = label(); } catch (e) { lblErr = e.message; }
+    styleBlock($('special-rows'), function (row, fs) {
+      row.appendChild(figure({ blank: true }, opts(fs), 'blank'));
+      row.appendChild(figure({ blank: true, letter: 'E' }, opts(fs), 'blank as E'));
+      row.appendChild(figure({ letter: 'A', value: 1 }, opts(fs, { faceDown: true }), 'back'));
+      row.appendChild(figure({ letter: 'A', value: 1 }, opts(fs, { faceDown: true, backLabel: 'ChiefWords' }), 'ChiefWords'));
+      row.appendChild(figure({ letter: 'A', value: 1 }, opts(fs, { faceDown: true, backLabel: 'ChiefGrid' }), 'ChiefGrid'));
+      if (lbl) row.appendChild(figure({ letter: 'A', value: 1 }, opts(fs, { faceDown: true, backLabel: lbl }), 'label: ' + lbl));
+      else if (lblErr) row.appendChild(figure({ blank: true }, opts(fs), 'label error'));
+    });
+
+    styleBlock($('set-rows'), function (row, fs) {
+      set.tiles.forEach(function (t) {
+        row.appendChild(figure({ letter: t.letter, value: t.value }, opts(fs), t.letter + ' ×' + t.count));
+      });
+      row.appendChild(figure({ blank: true }, opts(fs), 'blank ×' + set.blanks));
+    });
+    drawTry();
+  }
 
   /* live designer */
   function drawTry() {
+    var lblErr = '';
+    try { CT.render({ letter: 'A', value: 1 }, { faceDown: true, backLabel: label() }); } catch (e) { lblErr = e.message; }
     var letter = $('in-letter').value, value = parseInt($('in-value').value, 10);
-    var size = +$('in-size').value, radius = +$('in-radius').value;
-    $('size-out').textContent = size + 'px';
+    var radius = +$('in-radius').value;
     $('radius-out').textContent = radius + 'px';
     var tile = $('in-blank').checked ? { blank: true, letter: letter } : { letter: letter, value: isNaN(value) ? 0 : value };
     var row = $('try-row');
-    while (row.firstChild) row.removeChild(row.firstChild);
-    $('try-err').textContent = '';
+    clear(row);
+    $('try-err').textContent = lblErr;
     try {
       CT.FACE_STYLES.forEach(function (fs) {
-        row.appendChild(figure(tile, { faceStyle: fs, size: size, radius: radius, faceDown: $('in-down').checked }, fs));
+        row.appendChild(figure(tile, opts(fs, { radius: radius, faceDown: $('in-down').checked, backLabel: lblErr ? null : label() }), fs));
       });
     } catch (e) {
       $('try-err').textContent = e.message;
     }
   }
-  ['in-letter', 'in-value', 'in-size', 'in-radius', 'in-blank', 'in-down'].forEach(function (id) {
+  ['in-size', 'in-stroke', 'in-label'].forEach(function (id) {
+    $(id).addEventListener('input', drawAll);
+  });
+  ['in-letter', 'in-value', 'in-radius', 'in-blank', 'in-down'].forEach(function (id) {
     $(id).addEventListener('input', drawTry);
     $(id).addEventListener('change', drawTry);
   });
-  drawTry();
+  drawAll();
 })();
 </script>
 </body>
