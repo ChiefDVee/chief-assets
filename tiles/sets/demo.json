@@ -1,0 +1,19 @@
+{
+  "id": "demo",
+  "name": "DEMO — placeholder values, not a real distribution",
+  "lang": "nl",
+  "tiles": [
+    {"letter": "A", "value": 1, "count": 2},
+    {"letter": "E", "value": 1, "count": 2},
+    {"letter": "N", "value": 1, "count": 2},
+    {"letter": "O", "value": 1, "count": 2},
+    {"letter": "I", "value": 2, "count": 2},
+    {"letter": "D", "value": 2, "count": 2},
+    {"letter": "T", "value": 2, "count": 2},
+    {"letter": "K", "value": 3, "count": 2},
+    {"letter": "W", "value": 5, "count": 2},
+    {"letter": "IJ", "value": 4, "count": 2},
+    {"letter": "Z", "value": 10, "count": 2}
+  ],
+  "blanks": 2
+}
