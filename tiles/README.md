@@ -4,7 +4,7 @@ Self-rendered letter tiles as SVG strings. One classic script (`chief-tiles.js`,
 colours only from the Chief brand tokens (`var(--chief-*)`), zero external requests, no fonts: letters and digits are
 monoline SVG paths, so a tile looks the same on every device. MIT, see `LICENSE` (this folder only).
 
-**Status: v0.3.0 = design proof of concept.** Letter design settled (monoline glyphs), letter sets `nl`/`en` (100 tiles) and `nl_small`/`en_small` (60 tiles),
+**Status: v0.3.1 = design proof of concept.** Letter design settled (monoline glyphs), letter sets `nl`/`en` (100 tiles) and `nl_small`/`en_small` (60 tiles),
 two empty boards (`large` 15×15, `small` 11×11) via `renderBoard`; tile shape and dice are still open.
 
 ## Open the preview
@@ -16,7 +16,7 @@ It loads `../brand/chief-tokens.css` and `chief-tiles.js` with relative paths. S
 
 | | |
 |---|---|
-| `VERSION` | `"0.3.0"` |
+| `VERSION` | `"0.3.1"` |
 | `render(tile, opts)` | → SVG string. `tile = {id?, letter, value, blank?, meta?}` |
 | `mount(el, svg)` | puts the SVG into `el` without `innerHTML` and without style attributes (CSP-safe), returns the `<svg>` element |
 | `splitStyles(svg)` | pure step of `mount`: `{markup, styles}` (every `style="…"` → `data-ct-s="<i>"`) |
@@ -36,6 +36,8 @@ It loads `../brand/chief-tokens.css` and `chief-tiles.js` with relative paths. S
   to fit, for a later die face like `QU`. A character without a glyph throws.
 - Value: integer 0-99, monoline digits bottom right.
 - Blank tile: `blank: true`, no letter or a chosen letter in the blank colour with a dashed inner border, no value.
+- Back (`faceDown`): diagonal lattice + double frame, scale-aware: the lattice step is at least 6 px on screen (never finer than at 75 px and up),
+  at least 3 lines per direction, lattice and frame lines at least 1 px wide, so a back stays visible on a 44 px rack.
 - Tile id is raw data; `render()` escapes it exactly once. Outside `render()` show text with `textContent`, never `innerHTML`.
 
 ## Glyph schema (`glyphs/<id>.json`)
@@ -73,7 +75,8 @@ Unknown keys are an error. `boards/large.json` (15×15, sets `nl`/`en`) and `boa
 
 `renderBoard` draws every square as `<g data-cell="r,c" role="img" aria-label="Double letter | Triple letter | Double word | Triple word | Start | Empty">`;
 the SVG has `aria-label="Board 15 by 15"`. Premium squares carry their label (`2L`, `3L`, `2W`, `3W`) in monoline glyphs, so colour is never
-the only difference. The start square shows the tile back (the `minimal` back without a label), scaled into the square.
+the only difference. The start square shows the scale-aware tile back without a label, in its own colours so it stands out:
+lattice in full `--chief-accent` on `--chief-surface-2` (`minimal`) or `--chief-bg` (`classic`), plus an accent border twice as thick as the 2W border.
 Colours only from the brand tokens: 3W `--chief-accent`, 2W accent border on `--chief-accent-dim`, 3L `--chief-chart-2`,
 2L chart-2 border on `--chief-chart-2-dim`. `mount` and `splitStyles` work the same as for tiles.
 

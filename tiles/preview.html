@@ -95,9 +95,9 @@
     <p class="err" id="try-err"></p>
   </section>
 
-  <section>
+  <section id="rack">
     <h2>Rack on a phone</h2>
-    <p class="hint">Seven tiles at 44 px, roughly what a rack looks like on an iPhone.</p>
+    <p class="hint">Seven tiles at 44 px, roughly what a rack looks like on an iPhone, next to an opponent's rack: seven backs at 44 px.</p>
     <div id="rack-rows"></div>
   </section>
 
@@ -221,13 +221,17 @@
     $('stroke-out').textContent = String(o.stroke);
 
     styleBlock($('rack-rows'), function (row, fs) {
-      var rack = el('div', 'rack');
+      var rack = el('div', 'rack'), backs = el('div', 'rack');
+      backs.setAttribute('data-rack', 'backs');
       RACK.forEach(function (t) {
-        var slot = el('div', 'slot');
+        var slot = el('div', 'slot'), back = el('div', 'slot');
         CT.mount(slot, CT.render({ letter: t[0], value: t[1] }, { faceStyle: fs, size: 44, stroke: o.stroke }));
+        CT.mount(back, CT.render({ letter: t[0], value: t[1] }, { faceStyle: fs, size: 44, stroke: o.stroke, faceDown: true }));
         rack.appendChild(slot);
+        backs.appendChild(back);
       });
       row.appendChild(rack);
+      row.appendChild(backs);
     });
 
     styleBlock($('alpha-rows'), function (row, fs) {
