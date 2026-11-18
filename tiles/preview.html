@@ -51,7 +51,7 @@
   .controls { display: flex; flex-wrap: wrap; gap: var(--chief-space-4); margin-bottom: var(--chief-space-4); }
   label { display: flex; flex-direction: column; gap: var(--chief-space-1); font-size: 13px; color: var(--chief-muted); }
   label.inline { flex-direction: row; align-items: center; gap: var(--chief-space-2); }
-  input[type="text"], input[type="number"] {
+  input[type="text"], input[type="number"], select {
     width: 120px; padding: var(--chief-space-2) var(--chief-space-3);
     background: var(--chief-surface-2); color: var(--chief-text);
     border: 1px solid var(--chief-border-strong); border-radius: var(--chief-radius-sm); font: inherit;
@@ -112,6 +112,21 @@
     <h2>Blanks and backs</h2>
     <p class="hint">Blank (empty and playing E), the back without a label and with ChiefWords, ChiefGrid and the label field.</p>
     <div id="special-rows"></div>
+  </section>
+
+  <section>
+    <h2>Letter sets</h2>
+    <p class="hint">Real distributions from our own word lists (sets/nl.json, sets/en.json) plus the demo. Every letter once with its count, plus the blanks.</p>
+    <div class="controls">
+      <label>Set <select id="in-set">
+        <option value="nl">NL · Nederlands</option>
+        <option value="en">EN · English</option>
+        <option value="demo">demo</option>
+      </select></label>
+    </div>
+    <p class="hint" id="sets-summary"></p>
+    <div id="sets-rows"></div>
+    <p class="err" id="sets-err"></p>
   </section>
 
   <section>
@@ -224,8 +239,32 @@
       });
       row.appendChild(figure({ blank: true }, opts(fs), 'blank ×' + set.blanks));
     });
+    drawSets();
     drawTry();
   }
+
+  /* letter sets: pick nl / en / demo, every letter once with ×count, plus the blanks */
+  function drawSets() {
+    var host = $('sets-rows'), sid = $('in-set').value;
+    $('sets-err').textContent = '';
+    try {
+      var s = CT.validateSet(CT.BUILTIN_SETS[sid]);
+      var points = s.tiles.reduce(function (a, t) { return a + t.count * t.value; }, 0);
+      $('sets-summary').textContent = s.name + ' · lang ' + s.lang + ' · ' + CT.loadSet(sid).length + ' tiles in the bag (' +
+        (s.total - s.blanks) + ' letters + ' + s.blanks + ' blanks) · ' + s.tiles.length + ' distinct letters · sum of tile values ' + points;
+      styleBlock(host, function (row, fs) {
+        s.tiles.forEach(function (t) {
+          row.appendChild(figure({ letter: t.letter, value: t.value }, opts(fs), t.letter + ' ×' + t.count));
+        });
+        row.appendChild(figure({ blank: true }, opts(fs), 'blank ×' + s.blanks));
+      });
+    } catch (e) {
+      clear(host);
+      $('sets-summary').textContent = '';
+      $('sets-err').textContent = e.message;
+    }
+  }
+  $('in-set').addEventListener('change', drawSets);
 
   /* live designer */
   function drawTry() {

@@ -4,7 +4,7 @@ Self-rendered letter tiles as SVG strings. One classic script (`chief-tiles.js`,
 colours only from the Chief brand tokens (`var(--chief-*)`), zero external requests, no fonts: letters and digits are
 monoline SVG paths, so a tile looks the same on every device. MIT, see `LICENSE` (this folder only).
 
-**Status: v0.2.0 = design proof of concept.** Letter design settled (monoline glyphs); tile shape, distributions and dice are still open.
+**Status: v0.2.0 = design proof of concept.** Letter design settled (monoline glyphs), letter sets `nl` and `en` added; tile shape and dice are still open.
 
 ## Open the preview
 
@@ -52,6 +52,8 @@ Exactly A-Z and 0-9. Drawn as strokes (`fill: none`, round caps and joins).
 
 `id` = file name, `lang` = 2-3 lower-case letters, `tiles` non-empty with unique letters, each exactly one letter A-Z
 (no lower case, no accents, no digraph tiles: IJ is played as I + J), `value` 0-99, `count` 1-100, `blanks` 0-20.
-`sets/demo.json` is a **demo** with placeholder values, not a real distribution.
+`sets/nl.json` (Nederlands) and `sets/en.json` (English): 100 tiles each (98 letters, every letter A-Z at least once, + 2 blanks).
+Our own distribution, derived from the letter frequency of our own word lists (`../words/<lang>/letterfreq.json`) and tuned by hand;
+the JSON files are the source. `sets/demo.json` is a **demo** with placeholder values, not a real distribution.
 
 Letter dice: planned, see `dice/README.md`.
