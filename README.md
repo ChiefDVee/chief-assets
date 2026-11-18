@@ -8,6 +8,7 @@ Publieke asset repository voor gebruik door externe tools (Claude, Canva, etc.)
 - images/misc/     — overige afbeeldingen
 - brand/           — huisstijl: chief-tokens.css + brand-fonts (bron van waarheid, zie brand/README.md)
 - fonts/           — oude font-map (jsDelivr-links); nieuwe sites gebruiken brand/fonts/
+- words/           — woordenlijsten NL + EN, elk met eigen bronlicentie (niet onder tiles/LICENSE), zie words/README.md
 
 ## Gebruik
 Raw URL formaat:

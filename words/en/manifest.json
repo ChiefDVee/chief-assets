@@ -1,0 +1,79 @@
+{
+  "schema": 1,
+  "lang": "en",
+  "built": "2026-11-18",
+  "builder": "built with the Chief toolbox from the listed sources",
+  "sources": [
+    {
+      "name": "ENABLE",
+      "file": "enable1.txt",
+      "version": "enable1",
+      "released": null,
+      "git_commit": null,
+      "license": "public domain",
+      "files": [
+        {
+          "path": "enable/enable1.txt",
+          "sha256": "3f16130220645692ed49c7134e24a18504c2ca55b3c012f7290e3e77c63b1a89",
+          "bytes": 1743363
+        }
+      ]
+    }
+  ],
+  "normalisation": [
+    "1. A word that starts with a capital letter in the source is a proper noun (dropped); a word in all capitals is an acronym (dropped); a capital letter further in the word (pH, kWh) is mixed case (dropped).",
+    "2. Dropped: anything with a digit, space, hyphen, apostrophe, period or other punctuation or symbol (abbreviations, 's, e-mail, a.u.b.).",
+    "3. U+0133/U+0132 (the ij digraph) becomes IJ. Then Unicode NFKD, combining marks removed (an accented e becomes E, a diaeresis disappears), then upper case.",
+    "4. Anything other than A-Z after step 3 is dropped (reason not_a_z).",
+    "5. Length 2-15 letters.",
+    "6. Deduplicated after normalisation (reason duplicate), sorted, LF line endings, final newline."
+  ],
+  "counts": {
+    "source": 172823,
+    "rejected": {
+      "too_long": 4272
+    },
+    "final": 168551
+  },
+  "rejected_examples": {
+    "too_long": [
+      "absentmindedness",
+      "absentmindednesses",
+      "abstemiousnesses",
+      "abstractednesses",
+      "acanthocephalans"
+    ]
+  },
+  "by_length": {
+    "2": 96,
+    "3": 972,
+    "4": 3903,
+    "5": 8636,
+    "6": 15232,
+    "7": 23109,
+    "8": 28420,
+    "9": 24873,
+    "10": 20302,
+    "11": 15504,
+    "12": 11358,
+    "13": 7827,
+    "14": 5127,
+    "15": 3192
+  },
+  "levels": null,
+  "levels_reason": "botniveaus komen in de bots-ronde",
+  "outputs": {
+    "LICENSE-SOURCE.txt": {
+      "sha256": "1de9c5fb0472fc6a61874d1a1ed4569047df760ee38c119c046a50762fe8b9ba",
+      "bytes": 226
+    },
+    "letterfreq.json": {
+      "sha256": "108697b4c4102a16aeb3520315655ea65c3741acf67d3f514b611b7d1879147c",
+      "bytes": 3183
+    },
+    "words.txt": {
+      "sha256": "0d6d47327b05142362f52844113497d0439bd0a7fc8d0bc33ee40ecff0216ac1",
+      "bytes": 1666092
+    }
+  }
+}

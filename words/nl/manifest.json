@@ -1,0 +1,186 @@
+{
+  "schema": 1,
+  "lang": "nl",
+  "built": "2026-11-18",
+  "builder": "built with the Chief toolbox from the listed sources",
+  "sources": [
+    {
+      "name": "OpenTaal wordlist",
+      "file": "wordlist.txt",
+      "version": "2.20.23",
+      "released": "2023-03-10 14:03:04",
+      "git_commit": null,
+      "license": "BSD (revised) and/or CC BY 3.0, at your choice",
+      "files": [
+        {
+          "path": "opentaal/wordlist.txt",
+          "sha256": "12e5fb5e3c73840b583b30016926d1f63a75e9bf1652a3a6634b2ba7c49ad7be",
+          "bytes": 5104598
+        },
+        {
+          "path": "opentaal/LICENSE.txt",
+          "sha256": "4633afec7da0033afad9271d3d4e2d5e531c255339517d65ffe15fbf6e4292d8",
+          "bytes": 25775
+        },
+        {
+          "path": "opentaal/README.md",
+          "sha256": "90bea62f1ae6453e3743ecd0932e568df5321d5c27c81a817b535efb0e30816a",
+          "bytes": 12526
+        },
+        {
+          "path": "opentaal/datetimeversion.txt",
+          "sha256": "f5bd0201d83f2fcff8bd40d6bfd3d91f46759902a58f648fd2edb63aaba29422",
+          "bytes": 28
+        }
+      ]
+    }
+  ],
+  "normalisation": [
+    "1. A word that starts with a capital letter in the source is a proper noun (dropped); a word in all capitals is an acronym (dropped); a capital letter further in the word (pH, kWh) is mixed case (dropped).",
+    "2. Dropped: anything with a digit, space, hyphen, apostrophe, period or other punctuation or symbol (abbreviations, 's, e-mail, a.u.b.).",
+    "3. U+0133/U+0132 (the ij digraph) becomes IJ. Then Unicode NFKD, combining marks removed (an accented e becomes E, a diaeresis disappears), then upper case.",
+    "4. Anything other than A-Z after step 3 is dropped (reason not_a_z).",
+    "5. Length 2-15 letters.",
+    "6. Deduplicated after normalisation (reason duplicate), sorted, LF line endings, final newline."
+  ],
+  "counts": {
+    "source": 413937,
+    "rejected": {
+      "acronym": 4652,
+      "proper_noun": 50358,
+      "mixed_case": 510,
+      "digit": 624,
+      "space": 994,
+      "hyphen": 5194,
+      "apostrophe": 2099,
+      "period": 182,
+      "punctuation": 8,
+      "too_short": 29,
+      "too_long": 48976,
+      "duplicate": 360
+    },
+    "final": 299951
+  },
+  "rejected_examples": {
+    "acronym": [
+      "27MC",
+      "27 MC",
+      "2CV",
+      "3VO",
+      "4GL"
+    ],
+    "proper_noun": [
+      "A",
+      "Å",
+      "A1-locatie",
+      "A1-locaties",
+      "A3"
+    ],
+    "mixed_case": [
+      "10A-aansluiting",
+      "10A-aansluitingen",
+      "1e Exloërmond",
+      "1F-status",
+      "27MC-band"
+    ],
+    "digit": [
+      "010",
+      "013",
+      "020",
+      "030",
+      "030303"
+    ],
+    "space": [
+      "aan den lijve",
+      "aan weerszijden",
+      "aanw. vnw.",
+      "ab initio",
+      "abortus provocatus"
+    ],
+    "hyphen": [
+      "aanvals-",
+      "aap-noot-mies",
+      "aardolie-industrie",
+      "abat-jour",
+      "abat-jours"
+    ],
+    "apostrophe": [
+      "aangifteprogramma's",
+      "aanpassingsprogramma's",
+      "aansluitschema's",
+      "aansprakelijkheidsrisico's",
+      "aardbevingsrisico's"
+    ],
+    "period": [
+      "aanw.",
+      "a.d.h.v.",
+      "afb.",
+      "afd.",
+      "afz."
+    ],
+    "punctuation": [
+      "en/of",
+      "kbit/s",
+      "kb/s",
+      "km/h",
+      "km/u"
+    ],
+    "too_short": [
+      "a",
+      "à",
+      "b",
+      "c",
+      "d"
+    ],
+    "too_long": [
+      "aaibaarheidsfactor",
+      "aaibaarheidsgehalte",
+      "aalbessenjenever",
+      "aalmoezenierskamer",
+      "aalmoezenierskamers"
+    ],
+    "duplicate": [
+      "aïs",
+      "álle",
+      "alléén",
+      "allemáál",
+      "álles"
+    ]
+  },
+  "by_length": {
+    "2": 145,
+    "3": 1012,
+    "4": 2814,
+    "5": 5597,
+    "6": 11527,
+    "7": 18809,
+    "8": 26877,
+    "9": 34782,
+    "10": 41107,
+    "11": 40966,
+    "12": 36963,
+    "13": 31401,
+    "14": 26072,
+    "15": 21879
+  },
+  "levels": null,
+  "levels_reason": "botniveaus komen in de bots-ronde",
+  "outputs": {
+    "LICENSE-SOURCE.txt": {
+      "sha256": "4633afec7da0033afad9271d3d4e2d5e531c255339517d65ffe15fbf6e4292d8",
+      "bytes": 25775
+    },
+    "README-SOURCE.txt": {
+      "sha256": "90bea62f1ae6453e3743ecd0932e568df5321d5c27c81a817b535efb0e30816a",
+      "bytes": 12526
+    },
+    "letterfreq.json": {
+      "sha256": "f317a3f21ef986262b350700e603150d55a27d424d8c2828e9c6443e2c1da73e",
+      "bytes": 3199
+    },
+    "words.txt": {
+      "sha256": "181b1e3afe4061ba9b7136810e5946ef632d52f47a1ca13e792e80a7cf8c7e5f",
+      "bytes": 3478055
+    }
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "lang": "en",
+  "words": 168551,
+  "words_len2_8": 80368,
+  "letters_total": 1497541,
+  "letters_total_len2_8": 542415,
+  "letters": {
+    "A": {
+      "count": 113753,
+      "words_with": 90551,
+      "share": 7.596,
+      "share_len2_8": 8.028
+    },
+    "B": {
+      "count": 27975,
+      "words_with": 25759,
+      "share": 1.868,
+      "share_len2_8": 2.27
+    },
+    "C": {
+      "count": 60851,
+      "words_with": 52678,
+      "share": 4.063,
+      "share_len2_8": 3.599
+    },
+    "D": {
+      "count": 51769,
+      "words_with": 45869,
+      "share": 3.457,
+      "share_len2_8": 4.119
+    },
+    "E": {
+      "count": 172835,
+      "words_with": 117353,
+      "share": 11.541,
+      "share_len2_8": 11.774
+    },
+    "F": {
+      "count": 18857,
+      "words_with": 16829,
+      "share": 1.259,
+      "share_len2_8": 1.526
+    },
+    "G": {
+      "count": 41210,
+      "words_with": 37016,
+      "share": 2.752,
+      "share_len2_8": 2.957
+    },
+    "H": {
+      "count": 34649,
+      "words_with": 32085,
+      "share": 2.314,
+      "share_len2_8": 2.434
+    },
+    "I": {
+      "count": 133289,
+      "words_with": 98183,
+      "share": 8.901,
+      "share_len2_8": 7.501
+    },
+    "J": {
+      "count": 2462,
+      "words_with": 2428,
+      "share": 0.164,
+      "share_len2_8": 0.26
+    },
+    "K": {
+      "count": 13265,
+      "words_with": 12601,
+      "share": 0.886,
+      "share_len2_8": 1.419
+    },
+    "L": {
+      "count": 79705,
+      "words_with": 65889,
+      "share": 5.322,
+      "share_len2_8": 5.576
+    },
+    "M": {
+      "count": 42441,
+      "words_with": 38050,
+      "share": 2.834,
+      "share_len2_8": 2.845
+    },
+    "N": {
+      "count": 101630,
+      "words_with": 80727,
+      "share": 6.786,
+      "share_len2_8": 5.774
+    },
+    "O": {
+      "count": 97594,
+      "words_with": 76028,
+      "share": 6.517,
+      "share_len2_8": 6.096
+    },
+    "P": {
+      "count": 43790,
+      "words_with": 38727,
+      "share": 2.924,
+      "share_len2_8": 2.934
+    },
+    "Q": {
+      "count": 2479,
+      "words_with": 2471,
+      "share": 0.166,
+      "share_len2_8": 0.18
+    },
+    "R": {
+      "count": 106378,
+      "words_with": 87517,
+      "share": 7.104,
+      "share_len2_8": 7.212
+    },
+    "S": {
+      "count": 141999,
+      "words_with": 100421,
+      "share": 9.482,
+      "share_len2_8": 9.322
+    },
+    "T": {
+      "count": 99038,
+      "words_with": 79767,
+      "share": 6.613,
+      "share_len2_8": 5.74
+    },
+    "U": {
+      "count": 49278,
+      "words_with": 44846,
+      "share": 3.291,
+      "share_len2_8": 3.67
+    },
+    "V": {
+      "count": 14699,
+      "words_with": 14191,
+      "share": 0.982,
+      "share_len2_8": 0.965
+    },
+    "W": {
+      "count": 11637,
+      "words_with": 11177,
+      "share": 0.777,
+      "share_len2_8": 1.198
+    },
+    "X": {
+      "count": 4468,
+      "words_with": 4452,
+      "share": 0.298,
+      "share_len2_8": 0.332
+    },
+    "Y": {
+      "count": 24444,
+      "words_with": 23436,
+      "share": 1.632,
+      "share_len2_8": 1.831
+    },
+    "Z": {
+      "count": 7046,
+      "words_with": 6626,
+      "share": 0.471,
+      "share_len2_8": 0.439
+    }
+  }
+}

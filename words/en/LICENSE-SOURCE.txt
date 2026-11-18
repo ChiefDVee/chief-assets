@@ -1,0 +1,4 @@
+ENABLE (Enhanced North American Benchmark LExicon), compiled by Mendel Leo Cooper; placed in the public domain by its authors.
+
+Source file: enable1.txt
+sha256: 3f16130220645692ed49c7134e24a18504c2ca55b3c012f7290e3e77c63b1a89
