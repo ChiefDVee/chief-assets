@@ -59,6 +59,11 @@
   input[type="range"] { width: 160px; accent-color: var(--chief-accent); }
   .err { color: var(--chief-err); font-size: 14px; min-height: 1.4em; margin: var(--chief-space-2) 0 0; }
   code { font-family: var(--chief-font-mono); font-size: 13px; }
+  .boards { display: flex; flex-wrap: wrap; gap: var(--chief-space-6); align-items: flex-start; }
+  .board-slot { line-height: 0; max-width: 100%; }
+  .board-slot svg { max-width: 100%; height: auto; }
+  .legend { display: flex; flex-wrap: wrap; gap: var(--chief-space-2) var(--chief-space-4); margin: 0 0 var(--chief-space-3); padding: 0; list-style: none; font-size: 14px; }
+  .legend code { color: var(--chief-accent); }
 </style>
 </head>
 <body>
@@ -116,17 +121,33 @@
 
   <section>
     <h2>Letter sets</h2>
-    <p class="hint">Real distributions from our own word lists (sets/nl.json, sets/en.json) plus the demo. Every letter once with its count, plus the blanks.</p>
+    <p class="hint">Real distributions from our own word lists (sets/nl.json, sets/en.json: 100 tiles for the large board; nl_small, en_small: 60 tiles for the small board) plus the demo. Every letter once with its count, plus the blanks.</p>
     <div class="controls">
       <label>Set <select id="in-set">
         <option value="nl">NL · Nederlands</option>
         <option value="en">EN · English</option>
+        <option value="nl_small">NL small · Nederlands (klein)</option>
+        <option value="en_small">EN small · English (small)</option>
         <option value="demo">demo</option>
       </select></label>
     </div>
     <p class="hint" id="sets-summary"></p>
     <div id="sets-rows"></div>
     <p class="err" id="sets-err"></p>
+  </section>
+
+  <section id="boards">
+    <h2>Boards</h2>
+    <p class="hint">Empty boards from boards/*.json (renderBoard): large 15×15 with the 100-tile sets, small 11×11 with the 60-tile sets. The game draws the tiles on top.</p>
+    <ul class="legend" id="board-legend">
+      <li><code>2L</code> double letter</li>
+      <li><code>3L</code> triple letter</li>
+      <li><code>2W</code> double word</li>
+      <li><code>3W</code> triple word</li>
+      <li><code>start</code> centre square, no premium, the tile back</li>
+    </ul>
+    <div id="board-rows"></div>
+    <p class="err" id="board-err"></p>
   </section>
 
   <section>
@@ -243,6 +264,28 @@
     drawTry();
   }
 
+  /* boards: large ±420 px and small ±310 px side by side, both faceStyles; drawn once (no global opts) */
+  function drawBoards() {
+    var host = $('board-rows');
+    $('board-err').textContent = '';
+    try {
+      styleBlock(host, function (row, fs) {
+        row.className = 'boards';
+        [['large', 420], ['small', 310]].forEach(function (b) {
+          var v = CT.validateBoard(CT.BUILTIN_BOARDS[b[0]]);
+          var f = el('figure'), slot = el('div', 'board-slot'), cap = el('figcaption');
+          CT.mount(slot, CT.renderBoard(b[0], { size: b[1], faceStyle: fs }));
+          cap.textContent = v.name + ' · ' + v.size + '×' + v.size + ' · sets ' + v.sets.nl + ' / ' + v.sets.en;
+          f.appendChild(slot); f.appendChild(cap);
+          row.appendChild(f);
+        });
+      });
+    } catch (e) {
+      clear(host);
+      $('board-err').textContent = e.message;
+    }
+  }
+
   /* letter sets: pick nl / en / demo, every letter once with ×count, plus the blanks */
   function drawSets() {
     var host = $('sets-rows'), sid = $('in-set').value;
@@ -293,6 +336,7 @@
     $(id).addEventListener('change', drawTry);
   });
   drawAll();
+  drawBoards();
 })();
 </script>
 </body>
