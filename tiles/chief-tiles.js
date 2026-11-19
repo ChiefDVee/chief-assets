@@ -8,7 +8,7 @@
 (function (root) {
   'use strict';
 
-  var VERSION = '0.3.1';
+  var VERSION = '0.3.2';
   var W = 100, H = 100, CX = 50, CY = 50;              // viewBox (square tile)
 
   var FACE_STYLES = ['minimal', 'classic'];
@@ -654,9 +654,15 @@
   var PREMIUMS = ['2L', '3L', '2W', '3W'];
   var PREMIUM_NAMES = { '2L': 'Double letter', '3L': 'Triple letter', '2W': 'Double word', '3W': 'Triple word' };
   var BOARD_SIZE = { min: 7, max: 21 };
-  var BOARD_DEFAULTS = { size: 480, faceStyle: 'minimal' };
-  /* Board in viewBox units: 100 per square (pitch), square 94 wide (gap 6), plate margin 6. */
-  var BOARD = { pitch: 100, cell: 94, pad: 6, rx: 10, plateRx: 14, premiumEdge: 3, startEdge: 6 };
+  var BOARD_DEFAULTS = { size: 480, faceStyle: 'minimal', cellStroke: 'accent' };
+  /* Board in viewBox units: 100 per square (pitch), square 94 wide (gap 6), plate margin 6.
+     minimal (v0.3.2): every square gets a border on the inside of the square, scale-aware like the tile back
+     (max(base, px on screen in viewBox units)): plain/3L/3W cellEdgePx (1 px), the 2W/2L tint inside it with its own
+     edge (premiumEdge, at least premiumEdgePx), the start square startEdgePx: start > 2W (ring + edge) > plain. */
+  var BOARD = { pitch: 100, cell: 94, pad: 6, rx: 10, plateRx: 14, premiumEdge: 3, startEdge: 6,
+    cellEdge: 1, cellEdgePx: 1, premiumEdgePx: 1, startEdgePx: 3 };
+  /* minimal cell border per opts.cellStroke (classic ignores it): accent = full accent, dim = --chief-accent-dim */
+  var CELL_STROKES = { accent: '--chief-accent', dim: '--chief-accent-dim' };
   /* Label "2L" … "3W": monoline glyphs, one scale for all four (the widest fits in maxW), cap <= cap;
      line width = the tile letter rule (stroke 7 at cap 44, scaled along, floor 60 %). */
   var BOARD_LABEL = { cap: 34, maxW: 62 };
@@ -733,11 +739,13 @@
   }
 
   function boardOpts(opts) {
-    var o = { size: BOARD_DEFAULTS.size, faceStyle: BOARD_DEFAULTS.faceStyle };
+    var o = { size: BOARD_DEFAULTS.size, faceStyle: BOARD_DEFAULTS.faceStyle, cellStroke: BOARD_DEFAULTS.cellStroke };
     if (opts && opts.size !== undefined && opts.size !== null) o.size = +opts.size;
     if (opts && opts.faceStyle !== undefined && opts.faceStyle !== null) o.faceStyle = opts.faceStyle;
+    if (opts && opts.cellStroke !== undefined && opts.cellStroke !== null) o.cellStroke = opts.cellStroke;
     if (!(o.size > 0)) throw new Error('ChiefTiles.renderBoard: opts.size must be a positive number');
     if (FACE_STYLES.indexOf(o.faceStyle) < 0) throw new Error('ChiefTiles.renderBoard: opts.faceStyle must be one of ' + FACE_STYLES.join(', '));
+    if (!hasOwn(CELL_STROKES, o.cellStroke)) throw new Error('ChiefTiles.renderBoard: opts.cellStroke must be one of ' + Object.keys(CELL_STROKES).join(', '));
     return o;
   }
 
@@ -754,8 +762,9 @@
   }
 
   /* empty board → SVG string. Every square = <g data-cell="r,c" role="img" aria-label="…">; start = the scale-aware tile
-     back (START_TOKENS, no label) scaled into the square + a thick accent border. Same style-attribute approach as
-     render(), so mount/splitStyles work unchanged. */
+     back (START_TOKENS, no label) scaled into the square + a thick accent border. minimal: every other square has a
+     ±1 px border in CELL_STROKES[opts.cellStroke] (see BOARD); classic stays byte for byte v0.3.1. Same style-attribute
+     approach as render(), so mount/splitStyles work unchanged. */
   function renderBoard(input, opts) {
     var src = (typeof input === 'string' && hasOwn(BUILTIN_BOARDS, input)) ? BUILTIN_BOARDS[input] : input;
     var b = validateBoard(src), o = boardOpts(opts), bt = BOARD_TOKENS[o.faceStyle];
@@ -763,6 +772,15 @@
     var at = {};
     PREMIUMS.forEach(function (q) { b.premiums[q].forEach(function (rc) { at[rc[0] + ',' + rc[1]] = q; }); });
     var startPx = BOARD.cell * o.size / T, se = BOARD.startEdge;   // on-screen width of the start square
+    var mini = o.faceStyle === 'minimal', u = T / o.size;           // u = viewBox units per screen px
+    var ce = n3(Math.max(BOARD.cellEdge, BOARD.cellEdgePx * u)), pm = n3(Math.max(BOARD.premiumEdge, BOARD.premiumEdgePx * u));
+    if (mini) se = n3(Math.max(BOARD.startEdge, BOARD.startEdgePx * u));
+    var ring = CELL_STROKES[o.cellStroke];
+    /* minimal: rect inset by w (stroke on the inside of the square) */
+    var inset = function (x, y, d, css) {
+      return '<rect x="' + n3(x + d) + '" y="' + n3(y + d) + '" width="' + n3(BOARD.cell - 2 * d) + '" height="' + n3(BOARD.cell - 2 * d) +
+        '" rx="' + n3(Math.max(BOARD.rx - d, 1)) + '" style="' + css + '"/>';
+    };
     var back = backFace(START_TOKENS[o.faceStyle], BOARD.rx * W / BOARD.cell, {}, { backLabel: null, stroke: DEFAULTS.stroke }, startPx);
     var out = '<rect x="0.5" y="0.5" width="' + (T - 1) + '" height="' + (T - 1) + '" rx="' + BOARD.plateRx + '" style="' +
       fill(bt.plate) + ';stroke:var(' + bt.plateEdge + ');stroke-width:1"/>';
@@ -775,8 +793,14 @@
         var rect = '<rect x="' + x + '" y="' + y + '" width="' + BOARD.cell + '" height="' + BOARD.cell + '" rx="' + BOARD.rx + '" style="';
         if (isStart) {
           out += '<g transform="translate(' + x + ' ' + y + ') scale(' + n3(BOARD.cell / W) + ')">' + back + '</g>' +
+            (mini ? inset(x, y, se / 2, stroke(START_TOKENS[o.faceStyle].edge, se)) :
             '<rect x="' + (x + se / 2) + '" y="' + (y + se / 2) + '" width="' + (BOARD.cell - se) + '" height="' + (BOARD.cell - se) +
-            '" rx="' + (BOARD.rx - se / 2) + '" style="' + stroke(START_TOKENS[o.faceStyle].edge, se) + '"/>';
+            '" rx="' + (BOARD.rx - se / 2) + '" style="' + stroke(START_TOKENS[o.faceStyle].edge, se) + '"/>');
+        } else if (mini) {
+          var mp = p ? PREMIUM_TOKENS[p] : null;
+          out += inset(x, y, ce / 2, fill(mp && !mp.edge ? mp.fill : bt.cell) + ';stroke:var(' + ring + ');stroke-width:' + ce);
+          if (mp && mp.edge) out += inset(x, y, ce + pm / 2, fill(mp.fill) + ';stroke:var(' + mp.edge + ');stroke-width:' + pm);
+          if (mp) out += premiumLabel(p, x, y, mp.label);
         } else if (!p) {
           out += rect + fill(bt.cell) + ';stroke:var(' + bt.cellEdge + ');stroke-width:1"/>';
         } else {

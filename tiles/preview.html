@@ -138,7 +138,7 @@
 
   <section id="boards">
     <h2>Boards</h2>
-    <p class="hint">Empty boards from boards/*.json (renderBoard): large 15×15 with the 100-tile sets, small 11×11 with the 60-tile sets. The game draws the tiles on top.</p>
+    <p class="hint">Empty boards from boards/*.json (renderBoard): large 15×15 with the 100-tile sets, small 11×11 with the 60-tile sets. The game draws the tiles on top. minimal: every square has a ±1 px border, cellStroke accent (default) or dim; classic ignores cellStroke.</p>
     <ul class="legend" id="board-legend">
       <li><code>2L</code> double letter</li>
       <li><code>3L</code> triple letter</li>
@@ -268,21 +268,27 @@
     drawTry();
   }
 
-  /* boards: large ±420 px and small ±310 px side by side, both faceStyles; drawn once (no global opts) */
+  /* boards: large ±420 px and small ±310 px; minimal with cellStroke accent (default) and dim side by side,
+     classic once (ignores cellStroke); drawn once (no global opts) */
   function drawBoards() {
     var host = $('board-rows');
     $('board-err').textContent = '';
     try {
       styleBlock(host, function (row, fs) {
         row.className = 'boards';
-        [['large', 420], ['small', 310]].forEach(function (b) {
+        var strokes = fs === 'minimal' ? ['accent', 'dim'] : [null];
+        [['large', 420], ['small', 310]].forEach(function (b) { strokes.forEach(function (cs) {
           var v = CT.validateBoard(CT.BUILTIN_BOARDS[b[0]]);
           var f = el('figure'), slot = el('div', 'board-slot'), cap = el('figcaption');
-          CT.mount(slot, CT.renderBoard(b[0], { size: b[1], faceStyle: fs }));
-          cap.textContent = v.name + ' · ' + v.size + '×' + v.size + ' · sets ' + v.sets.nl + ' / ' + v.sets.en;
+          var bo = { size: b[1], faceStyle: fs };
+          if (cs) bo.cellStroke = cs;
+          CT.mount(slot, CT.renderBoard(b[0], bo));
+          f.setAttribute('data-cell-stroke', cs || 'n/a');
+          cap.textContent = v.name + ' · ' + v.size + '×' + v.size + ' · sets ' + v.sets.nl + ' / ' + v.sets.en +
+            (cs ? ' · cellStroke: ' + cs : '');
           f.appendChild(slot); f.appendChild(cap);
           row.appendChild(f);
-        });
+        }); });
       });
     } catch (e) {
       clear(host);

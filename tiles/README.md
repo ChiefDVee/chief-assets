@@ -4,7 +4,7 @@ Self-rendered letter tiles as SVG strings. One classic script (`chief-tiles.js`,
 colours only from the Chief brand tokens (`var(--chief-*)`), zero external requests, no fonts: letters and digits are
 monoline SVG paths, so a tile looks the same on every device. MIT, see `LICENSE` (this folder only).
 
-**Status: v0.3.1 = design proof of concept.** Letter design settled (monoline glyphs), letter sets `nl`/`en` (100 tiles) and `nl_small`/`en_small` (60 tiles),
+**Status: v0.3.2 = design proof of concept.** Letter design settled (monoline glyphs), letter sets `nl`/`en` (100 tiles) and `nl_small`/`en_small` (60 tiles),
 two empty boards (`large` 15×15, `small` 11×11) via `renderBoard`; tile shape and dice are still open.
 
 ## Open the preview
@@ -16,14 +16,14 @@ It loads `../brand/chief-tokens.css` and `chief-tiles.js` with relative paths. S
 
 | | |
 |---|---|
-| `VERSION` | `"0.3.1"` |
+| `VERSION` | `"0.3.2"` |
 | `render(tile, opts)` | → SVG string. `tile = {id?, letter, value, blank?, meta?}` |
 | `mount(el, svg)` | puts the SVG into `el` without `innerHTML` and without style attributes (CSP-safe), returns the `<svg>` element |
 | `splitStyles(svg)` | pure step of `mount`: `{markup, styles}` (every `style="…"` → `data-ct-s="<i>"`) |
 | `validateSet(json)` | full validation, throws `ChiefTiles set "<id>": <path> …` |
 | `validateGlyphs(json)` | full validation of a glyph font, throws `ChiefTiles glyphs "<id>": <path> …` |
 | `validateBoard(json)` | full validation of a board, throws `ChiefTiles board "<id>": <path> …` |
-| `renderBoard(board \| id, opts)` | → SVG string of an **empty** board; `opts.size` (px, whole board, default 480), `opts.faceStyle` (`minimal` default, `classic`) |
+| `renderBoard(board \| id, opts)` | → SVG string of an **empty** board; `opts.size` (px, whole board, default 480), `opts.faceStyle` (`minimal` default, `classic`), `opts.cellStroke` (`accent` default, `dim`; `minimal` only) |
 | `loadSet(json \| id)` | → flat list of tiles `{id, letter, value}` + blanks `{id, letter: "", value: 0, blank: true}` |
 | `BUILTIN_SETS` / `BUILTIN_GLYPHS` / `BUILTIN_BOARDS` | all `sets/*.json` / `glyphs/*.json` / `boards/*.json`, generated into the script (never edit by hand) |
 
@@ -76,7 +76,10 @@ Unknown keys are an error. `boards/large.json` (15×15, sets `nl`/`en`) and `boa
 `renderBoard` draws every square as `<g data-cell="r,c" role="img" aria-label="Double letter | Triple letter | Double word | Triple word | Start | Empty">`;
 the SVG has `aria-label="Board 15 by 15"`. Premium squares carry their label (`2L`, `3L`, `2W`, `3W`) in monoline glyphs, so colour is never
 the only difference. The start square shows the scale-aware tile back without a label, in its own colours so it stands out:
-lattice in full `--chief-accent` on `--chief-surface-2` (`minimal`) or `--chief-bg` (`classic`), plus an accent border twice as thick as the 2W border.
+lattice in full `--chief-accent` on `--chief-surface-2` (`minimal`) or `--chief-bg` (`classic`), plus a thick accent border.
+In `minimal` (v0.3.2) every square has a ±1 px border on screen (scale-aware, at least 1 px), inside the square: `--chief-accent`
+with `cellStroke: "accent"` (default) or `--chief-accent-dim` with `cellStroke: "dim"`. Thickness order: start (±3 px) > 2W (border + its own
+accent edge, ±2 px) > every other square (±1 px). `classic` ignores `cellStroke` and is unchanged.
 Colours only from the brand tokens: 3W `--chief-accent`, 2W accent border on `--chief-accent-dim`, 3L `--chief-chart-2`,
 2L chart-2 border on `--chief-chart-2-dim`. `mount` and `splitStyles` work the same as for tiles.
 
