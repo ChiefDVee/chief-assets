@@ -27,6 +27,8 @@
   --chief-die:           #f4f1ea;               /* crème dobbelsteenvlak; ogen --chief-bg (17.55 op die), 1-oog --chief-accent */
   --chief-card-face:     #f4f1ea;               /* cards PoC: crème kaartvlak (= --chief-die); zwarte kleuren ♠♣ = --chief-bg (17.55) */
   --chief-card-red:      #c8102e;               /* cards PoC: rode kleuren ♥♦, 5.22 op card-face */
+  --chief-card-green:    #3fb86b;               /* ChiefMahjong-stenen: groen, 6.72 op --chief-surface-2 (steenvlak) */
+  --chief-card-blue:     #5a9cf0;               /* ChiefMahjong-stenen: blauw, 6.04 op --chief-surface-2 (steenvlak) */
   --chief-radius-sm:     8px;                   /* inputs/selects */
   --chief-radius-pill:   999px;                 /* knoppen (standaard), tags */
   --chief-space-1: 4px;  --chief-space-2: 8px;  --chief-space-3: 12px; --chief-space-4: 16px;

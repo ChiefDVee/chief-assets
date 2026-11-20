@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ChiefMahjong — tile preview</title>
+<link rel="stylesheet" href="../brand/chief-tokens.css">
+<style>
+  body { margin: 0; padding: var(--chief-space-6); background: var(--chief-bg); color: var(--chief-text);
+         font-family: var(--chief-font-body); }
+  h1 { margin: 0 0 var(--chief-space-2); font-size: 28px; }
+  h1 .accent { color: var(--chief-accent); }
+  h2 { margin: var(--chief-space-7) 0 var(--chief-space-3); font-size: 18px; }
+  h3 { margin: var(--chief-space-5) 0 var(--chief-space-2); font-size: 14px; color: var(--chief-muted); font-weight: 600; }
+  p { color: var(--chief-muted); max-width: 760px; }
+  .grid { display: flex; flex-wrap: wrap; gap: var(--chief-space-2); align-items: flex-end; }
+  .cell { display: flex; flex-direction: column; align-items: center; gap: var(--chief-space-1); }
+  .cell span { font-family: var(--chief-font-mono); font-size: 10px; color: var(--chief-muted); }
+  .states { display: flex; gap: var(--chief-space-4); flex-wrap: wrap; }
+  .board { position: relative; margin-top: var(--chief-space-4); }
+  .board > div { position: absolute; }
+  .note { font-size: 12px; }
+</style>
+</head>
+<body>
+<h1>Chief<span class="accent">Mahjong</span> tiles</h1>
+<p>All 42 kinds per theme at size 60 and 40, the tile states, and a 3-layer stacking example (blocked tiles are dimmed by
+the free-tile rule). Local preview, no server, zero external requests.</p>
+
+<h2>States</h2>
+<div class="states" id="states"></div>
+
+<div id="themes"></div>
+
+<h2>Board: 3 layers</h2>
+<p class="note">Free = nothing on top and no neighbour on the left or on the right. Click a free tile to select it.</p>
+<div class="board" id="board"></div>
+
+<script src="chief-mahjong.js"></script>
+<script src="preview.js"></script>
+</body>
+</html>
