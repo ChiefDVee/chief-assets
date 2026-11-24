@@ -10,7 +10,8 @@ begint met een `GENERATED`-kopregel met de sha256 van de bron; een handbewerking
 ## Inhoud
 | Bestand | Wat |
 |---|---|
-| `chief-tokens.css` | `:root`-set `--chief-*`: kleuren, radius, fonts, spacing. Eén donker thema, geen light-variant. Plus grafiekreeks `--chief-chart-2(-dim)`, het crème dobbelsteenvlak `--chief-die` (ChiefDice, ChiefYatzy; ogen = `--chief-bg`) en het printpalet `--chief-print-*` (wit papier, enkel voor PDF/print-export, geen schermthema) |
+| `chief-tokens.css` | `:root`-set `--chief-*`: kleuren, radius, fonts, spacing, typografie (`--chief-fs-*` schaal xs…title + rollen, `--chief-fw-*`, `--chief-lh-*`) en tap-targets (`--chief-tap` 44 px, `--chief-tap-big`, `--chief-tap-visual-sm`). Eén donker thema, geen light-variant. Plus grafiekreeks `--chief-chart-2(-dim)`, het crème dobbelsteenvlak `--chief-die` (ChiefDice, ChiefYatzy; ogen = `--chief-bg`) en het printpalet `--chief-print-*` (wit papier, enkel voor PDF/print-export, geen schermthema) |
+| `chief-gamebar.css` | gedeelde game chrome (enkel CSS, enkel `var(--chief-*)`): `.chief-gamebar` (header, knopvolgorde `[extra] [👤] [EN\|NL] [?] [⌂]`, safe-area), `.chief-gamebar__btn` (≥ 44 px), `.chief-lang` (actieve taal = accent), `.chief-btn--danger-small`, `.chief-btn--confirming`, `.chief-wordmark` (systeemfont), `.chief-sheet` (How to play). Enkel naar spel-sites; elke selector hangt aan een eigen klasse |
 | `fonts/fonts.css` | catalogus met alle `@font-face`-blokken (relatieve `url("…woff2")`). Per site wordt een fonts.css gegenereerd met enkel de gekozen families |
 | `fonts/*.woff2` | Latin-subsets, worden byte-identiek gekopieerd |
 | `fonts/OFL-*.txt` | SIL Open Font License 1.1 per font, worden byte-identiek meegekopieerd |
@@ -21,14 +22,13 @@ begint met een `GENERATED`-kopregel met de sha256 van de bron; een handbewerking
 - Accent `--chief-accent: #f7931a` (8.62 : 1 op `#0a0a0a`).
 - Alle sites donker (ook ChiefMix, later).
 - Body-font = systeemstack (`--chief-font-body`), geen webfont.
+- 2026-11-24: ook het wordmark en de vroegere display-tekst = systeemfont; `--chief-font-display` verwijst naar `--chief-font-body` (zwaar via `--chief-fw-heavy`). Webfonts enkel nog voor mono, het QOTD-merk en de Bingo-printkaarten.
 - Knoppen = pill (`--chief-radius-pill`).
 
 ## Fonts
 | Familie | Bestand(en) | Licentie |
 |---|---|---|
 | Archivo Black | `archivo-black-latin-400.woff2` | `OFL-archivoblack.txt` |
-| Bowlby One | `bowlby-one-latin-400.woff2` | `OFL-bowlbyone.txt` (Reserved Font Name: enkel ongewijzigd herverdelen) |
-| Figtree | `figtree-latin-var.woff2` (variabel 400–800) | `OFL-figtree.txt` |
 | JetBrains Mono | `jetbrains-mono-latin-500.woff2` | `OFL-jetbrainsmono.txt` |
 | QOTD Bodoni (Bodoni Moda) | `bodoni-moda-latin-{400,700}-normal.woff2` | `OFL-bodonimoda.txt` |
 

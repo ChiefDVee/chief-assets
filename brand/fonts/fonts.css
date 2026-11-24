@@ -2,7 +2,7 @@
    Elke site krijgt een gegenereerde fonts.css met enkel de @font-face-blokken die ze nodig heeft,
    plus byte-identieke kopieën van de woff2's en OFL's. Nooit met de hand bewerken in een site-repo.
    All fonts: SIL Open Font License 1.1. Latin subset, woff2. License file per font: <naam>-latin-*.woff2 → OFL-<naam zonder streepjes>.txt.
-   Archivo Black, Bowlby One, Figtree, JetBrains Mono: Google Fonts latin subsets (2026-11-11).
+   Archivo Black, JetBrains Mono: Google Fonts latin subsets (2026-11-11). UI en wordmark = systeemfont (2026-11-24): geen display-/body-webfont.
    Bodoni Moda: Fontsource 5.1.0 (zelfde bestanden als fonts/bodoni-moda/ in deze repo).
    Een commentaar direct boven een blok (zonder lege regel) gaat mee naar de gegenereerde fonts.css. */
 
@@ -12,21 +12,6 @@
   font-weight: 400;
   font-display: swap;
   src: url("archivo-black-latin-400.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Bowlby One";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("bowlby-one-latin-400.woff2") format("woff2");
-}
-/* Figtree: one variable file (Google serves the same file for 400/600/700/800) */
-@font-face {
-  font-family: "Figtree";
-  font-style: normal;
-  font-weight: 400 800;
-  font-display: swap;
-  src: url("figtree-latin-var.woff2") format("woff2");
 }
 @font-face {
   font-family: "JetBrains Mono";
